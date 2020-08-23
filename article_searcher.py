@@ -24,11 +24,7 @@ def main(training_articles):
     print(article)
     article_tokenized = tokenizer(article)
     print("\n\nPrinting Tokens")
-    print(article_tokenized)
-    print(type(article_tokenized))
-    with open("test.html", 'w') as file:
-        print(sys.stdout.encoding)
-        file.write(article_tokenized.decode("utf-8", errors="ignore"))
+    print(article_tokenized.decode("utf8", errors='ignore'))
 
 if __name__ == "__main__":
     main(training_articles)
