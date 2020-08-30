@@ -21,15 +21,15 @@ def cedict_importer(raw_cedict):
 
     cleaned_cedict = {}
 
-    for entry in cedict[30:]:
+    for entry in raw_cedict[30:]:
         try:
             cleaned_entry = re.search(r"(^.*)( )(.*)( )(\[)(.*)(\])( )(/)(.*)", entry)
             cleaned_cedict.update(
-                {cleaned_entry.groups()[2]: (cleaned_entry.groups()[5], cleaned_entry.groups()[9].replace("\n", ""))})
+                {cleaned_entry.groups()[2].encode("utf-8"): (cleaned_entry.groups()[5], cleaned_entry.groups()[9].replace("\n", ""))})
         except BaseException:
             print("Dictionary could not be processed. Aborting.")
             quit()
-        return cleaned_cedict
+    return cleaned_cedict
 
 
 cedict_ts = './chinese_english_dictionary/cedict_ts.u8'

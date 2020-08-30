@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from websites import websites
 import jieba
 
+from cedict_importer import cleaned_cedict
 from training_articles import training_articles
 
 def get_article(article_url, website):
@@ -14,19 +15,21 @@ def get_article(article_url, website):
     article = soup.find("div", {"id": websites[website]})
     return article.encode("utf-8")
 
-def tokenizer(article):
-    seg_list = jieba.cut(article)
-    return " / ".join(seg_list).encode(sys.stdout.encoding, errors='replace')
+def generate_article_dictionary(article, chinese_english_dictionary):
+    article_tokens = jieba.cut(article)
+    return {token.encode("utf-8"): chinese_english_dictionary[token.encode("utf-8")] for token in article_tokens
+            if token.encode("utf-8", errors="ignore") in chinese_english_dictionary}
 
-def main(training_articles):
+def main(training_articles, chinese_english_dictionary):
+    cleaned_cedict = chinese_english_dictionary
     article = get_article(training_articles[0][0], training_articles[0][1])
-    print(" \n\nPrinting Article")
-    print(article)
-    article_tokenized = tokenizer(article)
-    print("\n\nPrinting Tokens")
-    print(article_tokenized.decode("utf8", errors='ignore'))
+
+    article_dictionary = generate_article_dictionary(article, cleaned_cedict)
+    print("\n\nPrinting Article Dictionary")
+    print(len(article_dictionary))
+    print([str(k).encode("utf-8", errors="ignore") for k, v in article_dictionary.items()])
 
 if __name__ == "__main__":
-    main(training_articles)
+    main(training_articles, cleaned_cedict)
 
 
