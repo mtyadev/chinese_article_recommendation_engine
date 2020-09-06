@@ -3,6 +3,7 @@ tests.py
 websites.py
 R_and_D.ipynb
 .idea
+test.db
 /venv
 /.ipynb_checkpoints
 __pycache__
