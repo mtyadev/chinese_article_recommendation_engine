@@ -2,7 +2,7 @@
 
 import requests
 import sys
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 from websites import websites
 import jieba
 
@@ -12,7 +12,7 @@ from training_articles import training_articles
 def get_article(article_url, website):
     res = requests.get(article_url)
     soup = BeautifulSoup(res.content, features="html.parser")
-    article = soup.find("div", {"id": websites[website]})
+    article = soup.find("div", {"id": websites[website]}).get_text()
     return article.encode("utf-8")
 
 def generate_article_dictionary(article, chinese_english_dictionary):
