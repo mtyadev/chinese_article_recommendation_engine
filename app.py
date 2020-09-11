@@ -2,7 +2,6 @@ from flask import Flask, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from article_searcher import get_article
-from websites import websites
 from training_articles import training_articles
 
 app = Flask(__name__)

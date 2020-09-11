@@ -6,6 +6,9 @@
 
 {% block body %}
 <h1>Template</h1>
-<p> {{ article }} </p>
+<p> {{ article |safe }} </p>
+<br />
+<br />
+<p> {{ comments }} </p>
 {% endblock %}
 
