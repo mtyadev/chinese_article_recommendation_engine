@@ -2,7 +2,6 @@
 
 import requests
 import sys
-import re
 from bs4 import BeautifulSoup, Comment
 from websites import websites
 import jieba
