@@ -1,35 +1,30 @@
 # -*- coding:utf-8 -*-
 
 import requests
-import sys
-from bs4 import BeautifulSoup, Comment
+from bs4 import BeautifulSoup
 from websites import websites
 import jieba
 
-from cedict_importer import cleaned_cedict
-from training_articles import training_articles
 
 class Article():
-    def __init__(self,article_url,website):
+    def __init__(self, article_url, website, chinese_english_dictionary):
         self.article_url = article_url
         self.website = website
+        self.chinese_english_dictionary = chinese_english_dictionary
 
-    def get_article(article_url, website):
-        res = requests.get(article_url)
+    @property
+    def content(self):
+        res = requests.get(self.article_url)
         soup = BeautifulSoup(res.content, features="html.parser")
-        article = soup.find("div", {"id": websites[website]}).prettify()
+        article = soup.find("div", {"id": websites[self.website]}).prettify()
         return article.encode("utf-8")
 
-    def generate_article_dictionary(article, chinese_english_dictionary):
-        article_tokens = jieba.cut(article)
-        return {token.encode("utf-8"): chinese_english_dictionary[token.encode("utf-8")] for token in article_tokens
-                if token.encode("utf-8", errors="ignore") in chinese_english_dictionary}
+    @property
+    def context_dictionary(self):
+        article_tokens = jieba.cut(self.content)
+        return {token.encode("utf-8"): self.chinese_english_dictionary[token.encode("utf-8")] for token in article_tokens
+                if token.encode("utf-8", errors="ignore") in self.chinese_english_dictionary}
 
 
-def main(training_articles, chinese_english_dictionary):
-    cleaned_cedict = chinese_english_dictionary
-
-if __name__ == "__main__":
-    main(training_articles, cleaned_cedict)
 
 

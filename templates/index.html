@@ -10,6 +10,11 @@
 <br />
 <br />
 <h1>Dictionary</h1>
-<p> {{ comments }} </p>
+<p>
+    {% for key, value in context_dictionary.items() %}
+      <li>{{key.decode("utf-8")}} : {{value}}</li>
+    {% endfor %}
+</p>
+
 {% endblock %}
 
