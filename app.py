@@ -19,13 +19,12 @@ class StudyProgress(db.Model):
     known_characters = db.Column(db.String(200), nullable=False)
 
 # Loading Article
-#cleaned_cedict = chinese_english_dictionary
 article = Article(training_articles[0][0], training_articles[0][1], cleaned_cedict)
 
 @app.route('/')
 def index():
-    return render_template("index.html", article=article.content.decode("utf-8"),
-                           context_dictionary=article.context_dictionary)
+    return render_template("index.html", context_dictionary=article.context_dictionary,
+                           article=article.annotated_sentences)
 
 if __name__ == "__main__":
     app.run(debug=True)

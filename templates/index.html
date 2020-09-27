@@ -9,10 +9,11 @@
 <p> {{ article | safe }} </p>
 <br />
 <br />
+
 <h1>Dictionary</h1>
 <p>
     {% for key, value in context_dictionary.items() %}
-      <li>{{key.decode("utf-8")}} : {{value}}</li>
+       <div id="{{key.decode('utf-8')}}"><li>{{key.decode("utf-8")}} : {{value}}</li></div>
     {% endfor %}
 </p>
 
