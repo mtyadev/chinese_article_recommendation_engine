@@ -43,24 +43,25 @@ class Article():
                 annotated_sentences.append(self._find_best_dict_match(token))
         return "".join(annotated_sentences).encode().decode('UTF-8')
 
-    def _find_best_dict_match(self, token):
-        if token.encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
+    def _find_best_dict_match(self, tokens):
+        if tokens.encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
             # exact match
-            return '<a href="#{}">{}</a>'.format(token, token)
+            return '<a href="#{}">{}</a>'.format(tokens, tokens)
         else:
-            # find longest match
-            original_token = token
-            token_list = list(token)
-            for _ in range(len(original_token)):
-                token_list.pop()
-                #print("".join(token_list).encode("utf-8", errors="ignore"))
-                if "".join(token_list).encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
-                    print("Found SHORTER Match !!!!!!!!!!!!!")
-                    # identify leftover parts from original token and run again with this part, iterate
-                    #print("FOUND LONGEST MATCH!!!!!!!")
-                    return '<a href="#{}">{}</a>'.format("".join(token_list), "".join(token_list))
-            return token
-
+            # split into groups and find longest matches
+            longest_matches = []
+            token_parts = list(tokens)
+            token_parts_start = 0
+            token_parts_end = len(token_parts)
+            run = 0
+            for _ in token_parts:
+                run += 1
+                if "".join(token_parts[token_parts_start:token_parts_end]).encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
+                    longest_matches.append('<a href="#{}">{}</a>'.format("".join(token_parts), "".join(token_parts)))
+                    token_parts_start = run + 1
+                    token_parts_end = len(token_parts)
+                token_parts_end = token_parts_end - 1
+            return "".join(longest_matches)
 
 
 
