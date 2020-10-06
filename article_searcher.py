@@ -41,28 +41,24 @@ class Article():
         for sentence in self.content_sentences:
             for token in jieba.cut(sentence):
                 annotated_sentences.append(self._find_best_dict_match(token))
-        print(annotated_sentences)
         return "".join(annotated_sentences).encode().decode('UTF-8')
 
     def _find_best_dict_match(self, token):
-        if token.encode("utf-8", errors="ignore") in self.cached_context_dictionary:
+        if token.encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
             # exact match
-            #print(token)
-            #print("Found exact match")
-            #print(self.cached_context_dictionary[token.encode("utf-8", errors="ignore")])
             return '<a href="#{}">{}</a>'.format(token, token)
         else:
             # find longest match
-            #print("Finding longest match")
             original_token = token
             token_list = list(token)
             for _ in range(len(original_token)):
                 token_list.pop()
-                #print(token_list)
-                if "".join(token).encode("utf-8", errors="ignore") in self.cached_context_dictionary:
+                #print("".join(token_list).encode("utf-8", errors="ignore"))
+                if "".join(token_list).encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
+                    print("Found SHORTER Match !!!!!!!!!!!!!")
                     # identify leftover parts from original token and run again with this part, iterate
                     #print("FOUND LONGEST MATCH!!!!!!!")
-                    pass
+                    return '<a href="#{}">{}</a>'.format("".join(token_list), "".join(token_list))
             return token
 
 
