@@ -52,11 +52,22 @@ class Article():
             longest_matches = []
             token_parts = list(tokens)
             search_right_most_token = len(token_parts)
+            # Sliding a window from right (search right most token) to left trying to find the longest match
             for run, token in enumerate(token_parts):
-                if "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]).encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
+                # If there is a match in the current window and the next bigger window looking ahead to the left is not
+                if "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]).encode("utf-8", errors="ignore") \
+                    in self.chinese_english_dictionary \
+                    and "".join(token_parts[len(token_parts)-(run + 2):search_right_most_token]).encode("utf-8", errors="ignore")\
+                    not in self.chinese_english_dictionary:
+                    # Append the found match including dictionary link
                     longest_matches.append('<a href="#{}">{}</a>'.format("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]), "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token])))
                     search_right_most_token = len(token_parts) - (run + 1)
-                elif run + 1 == len(token_parts) and "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]).encode("utf-8", errors="ignore") not in self.chinese_english_dictionary:
+
+                # If the window has reached the left most token and does not find a match
+                elif run + 1 == len(token_parts) \
+                    and "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]).encode("utf-8", errors="ignore")\
+                    not in self.chinese_english_dictionary:
+                    # Append without dictionary link
                     longest_matches.append("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]))
 
             return "".join(reversed(longest_matches))
