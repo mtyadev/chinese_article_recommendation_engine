@@ -5,10 +5,17 @@
 {% endblock %}
 
 {% block body %}
-<h1>Template</h1>
-<p> {{ article |safe }} </p>
+<h1>Article</h1>
+<p> {{ article | safe }} </p>
 <br />
 <br />
-<p> {{ comments }} </p>
+
+<h1>Dictionary</h1>
+<p>
+    {% for key, value in context_dictionary.items() %}
+       <div id="{{key.decode('utf-8')}}"><li>{{key.decode("utf-8")}} : {{value}}</li></div>
+    {% endfor %}
+</p>
+
 {% endblock %}
 

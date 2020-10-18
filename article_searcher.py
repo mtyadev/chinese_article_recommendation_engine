@@ -1,35 +1,83 @@
 # -*- coding:utf-8 -*-
 
 import requests
-import sys
-from bs4 import BeautifulSoup, Comment
+from bs4 import BeautifulSoup
 from websites import websites
 import jieba
+import re
 
-from cedict_importer import cleaned_cedict
-from training_articles import training_articles
 
-def get_article(article_url, website):
-    res = requests.get(article_url)
-    soup = BeautifulSoup(res.content, features="html.parser")
-    article = soup.find("div", {"id": websites[website]}).prettify()
-    return article.encode("utf-8")
+class Article():
+    def __init__(self, article_url, website, chinese_english_dictionary):
+        self.article_url = article_url
+        self.website = website
+        self.chinese_english_dictionary = chinese_english_dictionary
+        self.cached_context_dictionary = self.context_dictionary
 
-def generate_article_dictionary(article, chinese_english_dictionary):
-    article_tokens = jieba.cut(article)
-    return {token.encode("utf-8"): chinese_english_dictionary[token.encode("utf-8")] for token in article_tokens
-            if token.encode("utf-8", errors="ignore") in chinese_english_dictionary}
+    @property
+    def content(self):
+        res = requests.get(self.article_url)
+        soup = BeautifulSoup(res.content, features="html.parser")
+        article = soup.find("div", {"id": websites[self.website]}).prettify()
+        return article.encode("utf-8")
 
-def main(training_articles, chinese_english_dictionary):
-    cleaned_cedict = chinese_english_dictionary
-    article = get_article(training_articles[0][0], training_articles[0][1])
+    @property
+    def context_dictionary(self):
+        article_tokens = jieba.cut_for_search(self.content)
+        return {token.encode("utf-8"): self.chinese_english_dictionary[token.encode("utf-8")] for token in article_tokens
+                if token.encode("utf-8", errors="ignore") in self.chinese_english_dictionary}
 
-    article_dictionary = generate_article_dictionary(article, cleaned_cedict)
-    print("\n\nPrinting Article Dictionary")
-    print(len(article_dictionary))
-    print([str(k).encode("utf-8", errors="ignore") for k, v in article_dictionary.items()])
+    @property
+    def content_sentences(self):
+        res = requests.get(self.article_url)
+        soup = BeautifulSoup(res.content, features="html.parser")
+        article = soup.find("div", {"id": websites[self.website]}).getText()
+        sentences = re.findall(r'[^!?。\.\!\?]+[!?。\.\!\?]?', article)
+        return sentences
 
-if __name__ == "__main__":
-    main(training_articles, cleaned_cedict)
+    @property
+    def annotated_sentences(self):
+        annotated_sentences = []
+        for sentence in self.content_sentences:
+            for token in jieba.cut(sentence):
+                annotated_sentences.append(self._find_best_dict_match(token))
+        return "".join(annotated_sentences).encode().decode('UTF-8')
+
+    def _find_best_dict_match(self, tokens):
+        if tokens.encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
+            # exact match
+            return '<a href="#{}">{}</a>'.format(tokens, tokens)
+        else:
+            # split into groups and find longest matches
+            longest_matches = []
+            token_parts = list(tokens)
+            search_right_most_token = len(token_parts)
+            # Sliding a window from right (search right most token) to left trying to find the longest match
+            for run, token in enumerate(token_parts):
+                # If there is a match in the current window and the next bigger window looking ahead to the left is not
+                if "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]).encode("utf-8", errors="ignore") \
+                    in self.chinese_english_dictionary \
+                    and "".join(token_parts[len(token_parts)-(run + 2):search_right_most_token]).encode("utf-8", errors="ignore")\
+                    not in self.chinese_english_dictionary:
+                    # Append the found match including dictionary link
+                    longest_matches.append('<a href="#{}">{}</a>'.format("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]), "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token])))
+                    search_right_most_token = len(token_parts) - (run + 1)
+
+                # If the window has reached the left most token and does not find a match
+                elif run + 1 == len(token_parts) \
+                    and "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]).encode("utf-8", errors="ignore")\
+                    not in self.chinese_english_dictionary:
+                    # Append without dictionary link
+                    longest_matches.append("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]))
+
+            return "".join(reversed(longest_matches))
+
+
+
+
+
+
+
+
 
 

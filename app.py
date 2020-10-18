@@ -1,8 +1,10 @@
 from flask import Flask, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from article_searcher import get_article
+
+from article_searcher import Article
 from training_articles import training_articles
+from cedict_importer import cleaned_cedict
 
 app = Flask(__name__)
 
@@ -16,12 +18,13 @@ class StudyProgress(db.Model):
     date_created = db.Column(db.DateTime, default=datetime.utcnow())
     known_characters = db.Column(db.String(200), nullable=False)
 
-# Testing Flask Logic
-article = get_article(training_articles[0][0], training_articles[0][1]).decode("utf-8")
+# Loading Article
+article = Article(training_articles[0][0], training_articles[0][1], cleaned_cedict)
 
 @app.route('/')
 def index():
-    return render_template("index.html", article=article)
+    return render_template("index.html", context_dictionary=article.context_dictionary,
+                           article=article.annotated_sentences)
 
 if __name__ == "__main__":
     app.run(debug=True)
