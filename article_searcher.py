@@ -51,17 +51,15 @@ class Article():
             # split into groups and find longest matches
             longest_matches = []
             token_parts = list(tokens)
-            token_parts_start = 0
-            token_parts_end = len(token_parts)
-            run = 0
-            for _ in token_parts:
-                run += 1
-                if "".join(token_parts[token_parts_start:token_parts_end]).encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
-                    longest_matches.append('<a href="#{}">{}</a>'.format("".join(token_parts), "".join(token_parts)))
-                    token_parts_start = run + 1
-                    token_parts_end = len(token_parts)
-                token_parts_end = token_parts_end - 1
-            return "".join(longest_matches)
+            search_right_most_token = len(token_parts)
+            for run, token in enumerate(token_parts):
+                if "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]).encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
+                    longest_matches.append('<a href="#{}">{}</a>'.format("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]), "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token])))
+                    search_right_most_token = len(token_parts) - (run + 1)
+                elif run + 1 == len(token_parts) and "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]).encode("utf-8", errors="ignore") not in self.chinese_english_dictionary:
+                    longest_matches.append("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]))
+
+            return "".join(reversed(longest_matches))
 
 
 
