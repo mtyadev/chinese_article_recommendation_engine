@@ -41,7 +41,7 @@ class Article():
         for sentence in self.content_sentences:
             for token in jieba.cut(sentence):
                 annotated_sentences.append(self._find_best_dict_match(token))
-        return "".join(annotated_sentences).encode().decode('UTF-8')
+        return "".join(annotated_sentences).encode().decode("utf-8")
 
     def _find_best_dict_match(self, tokens):
         if tokens.encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
@@ -69,8 +69,9 @@ class Article():
                     not in self.chinese_english_dictionary:
                     # Append without dictionary link
                     longest_matches.append("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]))
-
-            return "".join(reversed(longest_matches))
+                for x in reversed(longest_matches):
+                    print(x.encode("utf-8"))
+            return "".join(reversed(longest_matches)).replace("\n","<br /><br />")
 
 
 
