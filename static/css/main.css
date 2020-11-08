@@ -1,6 +1,70 @@
-body {
-    margin: 100;
-    font-family: sans-serif;
-    font-size: 18px;
-    background-color: lightblue;
+
+.jumbotron {
+    margin: 0px auto;
+    background-image: url("REPLACE_ME");
+    margin-bottom: 0;`enter code here`
+    min-height: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    -webkit-background-size: cover;
+    background-size: cover;
+    color: orange; }
+
+#article {
+	margin-bottom: 21px;
+	font-size: 30px;
+	line-height: 1.7;
+	-webkit-font-smoothing: antialiased;
+	width: 100%
+}
+
+#glossar {
+	background-color:#ffeeff;
+	width: 100%
+}
+
+a: {
+	font-size: 14px;
+
+}
+
+a:link{
+	color:#ff6600;
+	text-decoration: none;
+}
+ a:visited{color:red;}
+ a:hover{color:#f00;}
+ a:active{color:#f00;}
+
+.already_known{
+	color: #333333;
+}
+
+table {
+    display: table;
+    border-collapse: separate;
+    border-spacing: 2px;
+    border-color: grey;
+}
+
+td, th {
+    display: table-cell;
+    vertical-align: inherit;
+}
+
+td {
+    padding: 10px;
+    text-align: left;
+}
+
+.easy {
+    color: green;
+}
+
+.medium {
+    color: orange;
+}
+
+.hard {
+    color: red;
 }

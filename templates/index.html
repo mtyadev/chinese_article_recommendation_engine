@@ -1,21 +1,22 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
 {% block head %}
-
+  {{ super() }}
+    <style type="text/css">
+    .important { color: #336699; }
+    </style>
 {% endblock %}
-
 {% block body %}
-<h1>Article</h1>
-<p> {{ article | safe }} </p>
-<br />
-<br />
+    <h1>Article</h1>
+        <div class = "article">
+            <p> {{ article | safe }} </p>
+        </div>
 
-<h1>Dictionary</h1>
-<p>
-    {% for key, value in context_dictionary.items() %}
-       <div id="{{key.decode('utf-8')}}"><li>{{key.decode("utf-8")}} : {{value}}</li></div>
-    {% endfor %}
-</p>
-
+    <h1>Dictionary</h1>
+        <div id = "fixedglossary">
+            {% for key, value in context_dictionary.items() %}
+               <div id="{{key.decode('utf-8')}}"><li>{{key.decode("utf-8")}} : {{value}}</li></div>
+            {% endfor %}
+        </div>
 {% endblock %}
 
