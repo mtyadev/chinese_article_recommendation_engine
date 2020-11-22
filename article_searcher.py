@@ -71,7 +71,7 @@ class Article():
                     longest_matches.append("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]))
                 for x in reversed(longest_matches):
                     print(x.encode("utf-8"))
-            return "".join(reversed(longest_matches)).replace("\n","<br /><br />")
+            return "".join(reversed(longest_matches)).replace("\n","<br /><br />").strip()
 
 
 
