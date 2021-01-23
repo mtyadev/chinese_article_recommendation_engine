@@ -26,6 +26,10 @@ def index():
     return render_template("index.html", context_dictionary=article.context_dictionary,
                            article=article.annotated_sentences)
 
+@app.route('/check', methods = ["GET", "POST"])
+def check():
+    return render_template("check.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
 
