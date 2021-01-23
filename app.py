@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -28,7 +28,11 @@ def index():
 
 @app.route('/check', methods = ["GET", "POST"])
 def check():
-    return render_template("check.html")
+    if request.method == "POST":
+        #req = jsonify(request.form.to_dict())
+        #req = request.form.getlist('unknown')
+        req = request.form.getlist('unknown')
+    return render_template("check.html", req=req)
 
 if __name__ == "__main__":
     app.run(debug=True)

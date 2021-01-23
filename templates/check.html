@@ -7,6 +7,14 @@
     </style>
 {% endblock %}
 {% block body %}
+<br />
     <h1>Check</h1>
+        {{req}}
+        {% for element in req %}
+            {{element.split(":")}}
+            {{element.split(":")[0]}}
+            {{element.split(":")[1]}}
+
+        {% endfor %}
 {% endblock %}
 

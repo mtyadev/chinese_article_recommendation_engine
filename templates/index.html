@@ -17,7 +17,7 @@
             <form action="/check" method="POST">
             {% for key, value in context_dictionary.items() %}
                <div id="{{key.decode('utf-8')}}">
-                   <input type="checkbox" data-toggle="toggle" name="unknown[]" value="{{key.decode('utf-8')}} : {{value}}"> {{key.decode('utf-8')}} : {{value}}
+                   <input type="checkbox" data-toggle="toggle" name="unknown" value="{{key.decode('utf-8')}} : {{value}}"> {{key.decode('utf-8')}} : {{value}}
                </div>
             {% endfor %}
             <br />
