@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -25,6 +25,14 @@ article = Article(training_articles[0][0], training_articles[0][1], cleaned_cedi
 def index():
     return render_template("index.html", context_dictionary=article.context_dictionary,
                            article=article.annotated_sentences)
+
+@app.route('/check', methods = ["GET", "POST"])
+def check():
+    if request.method == "POST":
+        #req = jsonify(request.form.to_dict())
+        #req = request.form.getlist('unknown')
+        req = request.form.getlist('unknown')
+    return render_template("check.html", req=req)
 
 if __name__ == "__main__":
     app.run(debug=True)
