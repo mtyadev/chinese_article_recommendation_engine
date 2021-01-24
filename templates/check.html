@@ -9,12 +9,12 @@
 {% block body %}
 <br />
     <h1>Check</h1>
-        {{req}}
-        {% for element in req %}
-            {{element.split(":")}}
-            {{element.split(":")[0]}}
-            {{element.split(":")[1]}}
-
-        {% endfor %}
+    {% for element in req %}
+        {% set key = element.split(":")[0] %}
+        {% set value = element.split(":")[1] %}
+        <div id="{{key}}">
+            <input type="checkbox" data-toggle="toggle" name="unknown" value="{{key}} : {{value}}"> {{key}} : {{value}}
+        </div>
+    {% endfor %}
 {% endblock %}
 
