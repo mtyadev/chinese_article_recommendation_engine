@@ -8,3 +8,4 @@ test.db
 /.ipynb_checkpoints
 __pycache__
 /chinese_english_dictionary
+.env

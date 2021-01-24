@@ -1,15 +1,23 @@
 from flask import Flask, render_template, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from dotenv import load_dotenv, find_dotenv
 
 from article_searcher import Article
 from training_articles import training_articles
 from cedict_importer import cleaned_cedict
 
+# Loading environment variables
+load_dotenv(find_dotenv())
+database_user = os.getenv("DB_USER")
+database_password = os.getenv("DB_PASSWORD")
+database_host = os.getenv("DB_HOST")
+database_name = os.getenv("DB_NAME")
+
 app = Flask(__name__)
 
 # Configuring and Intializing the Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://{}:{}@{}/{}'.format(database_user, database_password, database_host, database_name)
 db = SQLAlchemy(app)
 
 # Setting up the DB Model
