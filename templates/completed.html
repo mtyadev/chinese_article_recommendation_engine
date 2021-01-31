@@ -9,7 +9,7 @@
 {% block body %}
     <h1>Add to unknown characters list?</h1>
         <div id = "fixedglossary">
-            <form action="/completed" method="POST">
+            <form action="/check" method="POST">
                 {% for element in req %}
                     {% set key = element.split(":")[0] %}
                     {% set value = element.split(":")[1] %}

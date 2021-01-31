@@ -32,6 +32,14 @@ class Characters(db.Model):
     times_seen = db.Column(db.Integer, nullable=False)
     difficulty_hsk = db.Column(db.Integer)
 
+    def __init__(self, characters, pinyin, translation, known, times_seen, difficulty_hsk):
+        self.characters = characters
+        self.pinyin = pinyin
+        self.translation = translation
+        self.known = known
+        self.times_seen = times_seen
+        self.difficulty_hsk = difficulty_hsk
+
     def __repr__(self):
         return '<Characters %r>' % self.test
 
@@ -46,10 +54,22 @@ def index():
 @app.route('/check', methods = ["GET", "POST"])
 def check():
     if request.method == "POST":
-        #req = jsonify(request.form.to_dict())
-        #req = request.form.getlist('unknown')
         req = request.form.getlist('unknown')
     return render_template("check.html", req=req)
+
+@app.route('/completed', methods = ["GET", "POST"])
+def completed():
+    if request.method == "POST":
+        req = request.form.getlist('unknown')
+        for element in req:
+            characters = element.split(":")[0]
+            pinyin = element.split(":")[1].split(",")[0].replace("'","").replace("(","")
+            translation = element.split(":")[1].split(",")[1].replace("'","").replace("(","")
+            new_db_entry = Characters(characters,pinyin,translation,False,99999,99999)
+            db.session.add(new_db_entry)
+            db.session.commit()
+
+    return render_template("completed.html", req=req)
 
 if __name__ == "__main__":
     app.run(debug=True)
