@@ -18,14 +18,19 @@ database_name = os.getenv("DB_NAME")
 app = Flask(__name__)
 
 # Configuring and Intializing the Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://{}:{}@{}/{}'.format(database_user, database_password, database_host, database_name)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://{}:{}@{}/{}'.format(database_user, database_password,
+                                                                          database_host, database_name)
 db = SQLAlchemy(app)
 
 # Setting up the DB Model
 class Characters(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    test = db.Column(db.String(80), unique=True, nullable=False)
-    test2 = db.Column(db.String(120), unique=True, nullable=False)
+    characters = db.Column(db.String, nullable=False)
+    pinyin = db.Column(db.String, nullable=False)
+    translation = db.Column(db.String, nullable=False)
+    known = db.Column(db.Boolean, nullable=False)
+    times_seen = db.Column(db.Integer, nullable=False)
+    difficulty_hsk = db.Column(db.Integer)
 
     def __repr__(self):
         return '<Characters %r>' % self.test
