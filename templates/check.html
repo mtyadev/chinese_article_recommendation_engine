@@ -8,8 +8,8 @@
 {% endblock %}
 {% block body %}
     <!-- Start Testing Characters Export -->
-    {% for character in characters_for_db_export %}
-        {{character}}
+    {% for dictionary_entry in characters_for_db_export %}
+        {{dictionary_entry.characters}} - {{dictionary_entry.pinyin}} - {{dictionary_entry.translation}} <br />
     {% endfor %}
     <!-- End Testing Characters Export -->
     <h1>Add to unknown characters list?</h1>

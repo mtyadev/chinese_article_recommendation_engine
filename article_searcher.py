@@ -39,13 +39,14 @@ class Article():
     @property
     def characters_for_db_export(self):
         soup = BeautifulSoup(self.annotated_sentences, features="html.parser")
-        characters_for_db_export = soup.find_all('a', href=True)
-
-
-
-        characters_for_db_export = [(link["href"].replace("#", ""),
-                                     self.chinese_english_dictionary[link["href"].replace("#", "").encode("utf-8")])
-                                    for link in characters_for_db_export]
+        linked_characters = soup.find_all('a', href=True)
+        characters_for_db_export = []
+        for link in linked_characters:
+            characters = link["href"].replace("#", "")
+            pinyin = self.chinese_english_dictionary[link["href"].replace("#", "").encode("utf-8")][0]
+            translation = self.chinese_english_dictionary[link["href"].replace("#", "").encode("utf-8")][1:]
+            difficulty_hsk = "TBD"
+            characters_for_db_export.append(DictionaryEntry(characters, pinyin, translation, difficulty_hsk))
         return characters_for_db_export
 
     def _find_best_dict_match(self, tokens):
