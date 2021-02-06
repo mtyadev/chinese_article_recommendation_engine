@@ -7,6 +7,11 @@
     </style>
 {% endblock %}
 {% block body %}
+    <!-- Start Testing Characters Export -->
+    {% for character in characters_for_db_export %}
+        {{character}}
+    {% endfor %}
+    <!-- End Testing Characters Export -->
     <h1>Add to unknown characters list?</h1>
         <div id = "fixedglossary">
             <form action="/completed" method="POST">

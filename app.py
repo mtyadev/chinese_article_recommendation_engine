@@ -55,7 +55,7 @@ def index():
 def check():
     if request.method == "POST":
         req = request.form.getlist('unknown')
-    return render_template("check.html", req=req)
+    return render_template("check.html", req=req, characters_for_db_export=article.characters_for_db_export)
 
 @app.route('/completed', methods = ["GET", "POST"])
 def completed():

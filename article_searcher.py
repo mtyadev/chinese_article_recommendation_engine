@@ -6,7 +6,6 @@ from websites import websites
 import jieba
 import re
 
-
 class Article():
     def __init__(self, article_url, website, chinese_english_dictionary):
         self.article_url = article_url
@@ -20,12 +19,6 @@ class Article():
         soup = BeautifulSoup(res.content, features="html.parser")
         article = soup.find("div", {"id": websites[self.website]}).prettify()
         return article.encode("utf-8")
-
-    @property
-    def context_dictionary(self):
-        article_tokens = jieba.cut_for_search(self.content)
-        return {token.encode("utf-8"): self.chinese_english_dictionary[token.encode("utf-8")] for token in article_tokens
-                if token.encode("utf-8", errors="ignore") in self.chinese_english_dictionary}
 
     @property
     def content_sentences(self):
@@ -42,6 +35,18 @@ class Article():
             for token in jieba.cut(sentence):
                 annotated_sentences.append(self._find_best_dict_match(token))
         return "".join(annotated_sentences).encode().decode("utf-8")
+
+    @property
+    def characters_for_db_export(self):
+        soup = BeautifulSoup(self.annotated_sentences, features="html.parser")
+        characters_for_db_export = soup.find_all('a', href=True)
+
+
+
+        characters_for_db_export = [(link["href"].replace("#", ""),
+                                     self.chinese_english_dictionary[link["href"].replace("#", "").encode("utf-8")])
+                                    for link in characters_for_db_export]
+        return characters_for_db_export
 
     def _find_best_dict_match(self, tokens):
         if tokens.encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
@@ -72,6 +77,20 @@ class Article():
                 for x in reversed(longest_matches):
                     print(x.encode("utf-8"))
             return "".join(reversed(longest_matches)).replace("\n","<br /><br />").strip()
+
+    @property
+    def context_dictionary(self):
+        article_tokens = jieba.cut_for_search(self.content)
+        return {token.encode("utf-8"): self.chinese_english_dictionary[token.encode("utf-8")] for token in article_tokens
+                if token.encode("utf-8", errors="ignore") in self.chinese_english_dictionary}
+
+class DictionaryEntry():
+    def __init__(self, characters, pinyin, translation, difficulty_hsk):
+        self.characters = characters
+        self.pinyin = pinyin
+        self.translation = translation
+        self.difficulty_hsk = difficulty_hsk
+
 
 
 
