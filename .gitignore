@@ -2,10 +2,11 @@ training_articles.py
 tests.py
 websites.py
 R_and_D.ipynb
-.idea
 test.db
 /venv
 /.ipynb_checkpoints
 __pycache__
 /chinese_english_dictionary
+/database_schema
 .env
+.idea
