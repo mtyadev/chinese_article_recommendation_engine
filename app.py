@@ -73,8 +73,8 @@ class UsersCharacterKnowledge(db.Model):
 
     __tablename__ = "users_character_knowledge"
 
-    characters_dictionary_id = Column(Integer, ForeignKey("characters_dictionary.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    characters_dictionary_id = db.Column(db.Integer, db.ForeignKey("characters_dictionary.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     times_seen = db.Column(db.Integer, nullable=False)
     characters_known = db.Column(db.Boolean, nullable=False)
 
@@ -82,8 +82,8 @@ class UsersArticleAssessment(db.Model):
 
     __tablename__ = "users_article_assessment"
 
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    article_id = Column(Integer, ForeignKey("article.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    article_id = db.Column(db.Integer, db.ForeignKey("article.id"), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     difficulty = db.Column(db.Integer, nullable=False)
     tags = db.Column(db.String, nullable=False)
@@ -92,8 +92,8 @@ class CharactersInArticle(db.Model):
 
     __tablename__ = "characters_in_article"
 
-    characters_dictionary_id = Column(Integer, ForeignKey("characters_dictionary.id"), nullable=False)
-    article_id = Column(Integer, ForeignKey("article.id"), nullable=False)
+    characters_dictionary_id = db.Column(db.Integer, db.ForeignKey("characters_dictionary.id"), nullable=False)
+    article_id = db.Column(db.Integer, db.ForeignKey("article.id"), nullable=False)
     times_used_in_article = db.Column(db.Integer, nullable=False)
 
 # Loading Article
