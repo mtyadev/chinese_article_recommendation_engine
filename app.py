@@ -23,14 +23,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://{}:{}@{}/{}'.format(databa
 db = SQLAlchemy(app)
 
 # Setting up the DB Model
-class Characters(db.Model):
+
+# Below tables are main entities
+
+class CharactersDictionary(db.Model):
+    __tablename__ = "characters_dictionary"
+
     id = db.Column(db.Integer, primary_key=True)
     characters = db.Column(db.String, nullable=False)
     pinyin = db.Column(db.String, nullable=False)
     translation = db.Column(db.String, nullable=False)
-    known = db.Column(db.Boolean, nullable=False)
-    times_seen = db.Column(db.Integer, nullable=False)
-    difficulty_hsk = db.Column(db.Integer)
 
     def __init__(self, characters, pinyin, translation, known, times_seen, difficulty_hsk):
         self.characters = characters
@@ -41,7 +43,58 @@ class Characters(db.Model):
         self.difficulty_hsk = difficulty_hsk
 
     def __repr__(self):
-        return '<Characters %r>' % self.test
+        return '<Characters %r>' % self.characters
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    e_mail = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
+
+    def __repr__(self):
+        return '<User %r>' % self.e_mail
+
+class Article(db.Model):
+
+    __tablename__ = "article"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, nullable=False)
+    url = db.Column(db.String, nullable=False)
+    overall_rating = db.Column(db.Float, nullable=False)
+
+    def __repr__(self):
+        return '<Article %r>' % self.title
+
+# Below tables are bridge tables between main entities above
+
+class UsersCharacterKnowledge(db.Model):
+
+    __tablename__ = "users_character_knowledge"
+
+    characters_dictionary_id = Column(Integer, ForeignKey("characters_dictionary.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    times_seen = db.Column(db.Integer, nullable=False)
+    characters_known = db.Column(db.Boolean, nullable=False)
+
+class UsersArticleAssessment(db.Model):
+
+    __tablename__ = "users_article_assessment"
+
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    article_id = Column(Integer, ForeignKey("article.id"), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    difficulty = db.Column(db.Integer, nullable=False)
+    tags = db.Column(db.String, nullable=False)
+
+class CharactersInArticle(db.Model):
+
+    __tablename__ = "characters_in_article"
+
+    characters_dictionary_id = Column(Integer, ForeignKey("characters_dictionary.id"), nullable=False)
+    article_id = Column(Integer, ForeignKey("article.id"), nullable=False)
+    times_used_in_article = db.Column(db.Integer, nullable=False)
 
 # Loading Article
 article = Article(training_articles[0][0], training_articles[0][1], cleaned_cedict)
