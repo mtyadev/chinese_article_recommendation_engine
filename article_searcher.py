@@ -6,7 +6,7 @@ from websites import websites
 import jieba
 import re
 
-class Article():
+class FocusArticle():
     def __init__(self, article_url, website, chinese_english_dictionary):
         self.article_url = article_url
         self.website = website

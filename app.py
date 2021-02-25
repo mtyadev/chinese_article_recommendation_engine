@@ -1,10 +1,11 @@
 from flask import Flask, render_template, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from dotenv import load_dotenv, find_dotenv
 import os
 
-from article_searcher import Article
+from article_searcher import FocusArticle
 from training_articles import training_articles
 from cedict_importer import cleaned_cedict
 
@@ -29,18 +30,16 @@ db = SQLAlchemy(app)
 class CharactersDictionary(db.Model):
     __tablename__ = "characters_dictionary"
 
-    id = db.Column(db.Integer, primary_key=True)
-    characters = db.Column(db.String, nullable=False)
+    characters = db.Column(db.String, primary_key=True)
     pinyin = db.Column(db.String, nullable=False)
     translation = db.Column(db.String, nullable=False)
+    users_character_knowledge = relationship("UsersCharacterKnowledge")
+    characters_in_article = relationship("CharactersInArticle")
 
-    def __init__(self, characters, pinyin, translation, known, times_seen, difficulty_hsk):
+    def __init__(self, characters, pinyin, translation):
         self.characters = characters
         self.pinyin = pinyin
         self.translation = translation
-        self.known = known
-        self.times_seen = times_seen
-        self.difficulty_hsk = difficulty_hsk
 
     def __repr__(self):
         return '<Characters %r>' % self.characters
@@ -51,6 +50,7 @@ class User(db.Model):
     last_name = db.Column(db.String, nullable=False)
     e_mail = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
+    users_article_assessment = relationship("UsersArticleAssessment")
 
     def __repr__(self):
         return '<User %r>' % self.e_mail
@@ -73,31 +73,34 @@ class UsersCharacterKnowledge(db.Model):
 
     __tablename__ = "users_character_knowledge"
 
-    characters_dictionary_id = db.Column(db.Integer, db.ForeignKey("characters_dictionary.id"), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    characters = db.Column(db.String, db.ForeignKey("characters_dictionary.characters"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
     times_seen = db.Column(db.Integer, nullable=False)
     characters_known = db.Column(db.Boolean, nullable=False)
+    child = relationship("User")
 
 class UsersArticleAssessment(db.Model):
 
     __tablename__ = "users_article_assessment"
 
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    article_id = db.Column(db.Integer, db.ForeignKey("article.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    article_id = db.Column(db.Integer, db.ForeignKey("article.id"), primary_key=True)
     rating = db.Column(db.Integer, nullable=False)
     difficulty = db.Column(db.Integer, nullable=False)
     tags = db.Column(db.String, nullable=False)
+    article = relationship("Article")
 
 class CharactersInArticle(db.Model):
 
     __tablename__ = "characters_in_article"
 
-    characters_dictionary_id = db.Column(db.Integer, db.ForeignKey("characters_dictionary.id"), nullable=False)
-    article_id = db.Column(db.Integer, db.ForeignKey("article.id"), nullable=False)
+    characters = db.Column(db.String, db.ForeignKey("characters_dictionary.characters"), primary_key=True)
+    article_id = db.Column(db.Integer, db.ForeignKey("article.id"), primary_key=True)
     times_used_in_article = db.Column(db.Integer, nullable=False)
+    article = relationship("Article")
 
 # Loading Article
-article = Article(training_articles[0][0], training_articles[0][1], cleaned_cedict)
+article = FocusArticle(training_articles[0][0], training_articles[0][1], cleaned_cedict)
 
 @app.route('/')
 def index():
