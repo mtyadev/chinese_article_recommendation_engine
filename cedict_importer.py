@@ -1,7 +1,6 @@
-import os
 import re
 
-def cedict_importer(raw_cedict):
+def clean_cedict(raw_cedict):
     """
     https://cc-cedict.org/wiki/ will be used as Chinese English Dictionary
     This function cleans the raw cedict_ts.u8 file and converts it into a python dictionary
@@ -23,20 +22,21 @@ def cedict_importer(raw_cedict):
 
     for entry in raw_cedict[30:]:
         try:
-            cleaned_entry = re.search(r"(^.*)( )(.*)( )(\[)(.*)(\])( )(/)(.*)", entry)
+            cleaned_entry = re.search(r"(^.*)( )(.*)( )(\[)(.*)(\])( )(/)(.*)(/)", entry)
             cleaned_cedict.update(
-                {cleaned_entry.groups()[2].encode("utf-8"): (cleaned_entry.groups()[5], cleaned_entry.groups()[9].replace("\n", ""))})
+                {cleaned_entry.groups()[2].encode("utf-8"): (cleaned_entry.groups()[5],
+                                                             cleaned_entry.groups()[9].replace("\n", ""))})
         except BaseException:
             print("Dictionary could not be processed. Aborting.")
             quit()
     return cleaned_cedict
 
-
+# Loading raw cedict
 cedict_ts = './chinese_english_dictionary/cedict_ts.u8'
-
 with open(cedict_ts, encoding="utf8") as f:
     cedict = f.readlines()
+# Cleaning raw cedict and loading as dictionary
+cleaned_cedict = clean_cedict(cedict)
 
-cleaned_cedict = cedict_importer(cedict)
 
 

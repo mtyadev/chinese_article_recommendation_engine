@@ -121,12 +121,19 @@ def completed():
             characters = element.split(":")[0]
             pinyin = element.split(":")[1].split(",")[0].replace("'","").replace("(","")
             translation = element.split(":")[1].split(",")[1].replace("'","").replace("(","")
-            new_db_entry = Characters(characters,pinyin,translation,False,99999,99999)
+            new_db_entry = CharactersDictionary(characters,pinyin,translation)
             db.session.add(new_db_entry)
             db.session.commit()
 
     return render_template("completed.html", req=req)
 
 if __name__ == "__main__":
+    initialize_characters_dictionary = True # Make configurable
+    if initialize_characters_dictionary:
+        dictionary_entries = []
+        for key, value in cleaned_cedict.items():
+            dictionary_entries.append(CharactersDictionary(key, value[0], value[1]))
+        db.session.add(dictionary_entries)
+        db.session.commit()
     app.run(debug=True)
 
