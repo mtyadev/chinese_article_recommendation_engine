@@ -129,7 +129,7 @@ def completed():
 
 if __name__ == "__main__":
     # Initialize Characters Dictionary If Empty
-    initialize_characters_dictionary = True # Make configurable
+    initialize_characters_dictionary = False # Make configurable
     if initialize_characters_dictionary:
         dictionary_entries = []
         for key, value in cleaned_cedict.items():
