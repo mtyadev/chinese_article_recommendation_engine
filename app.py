@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, sessionmaker
 from datetime import datetime
 from dotenv import load_dotenv, find_dotenv
 import os
@@ -128,12 +128,13 @@ def completed():
     return render_template("completed.html", req=req)
 
 if __name__ == "__main__":
+    # Initialize Characters Dictionary If Empty
     initialize_characters_dictionary = True # Make configurable
     if initialize_characters_dictionary:
         dictionary_entries = []
         for key, value in cleaned_cedict.items():
             dictionary_entries.append(CharactersDictionary(key, value[0], value[1]))
-        db.session.add(dictionary_entries)
+        db.session.add_all(dictionary_entries)
         db.session.commit()
     app.run(debug=True)
 

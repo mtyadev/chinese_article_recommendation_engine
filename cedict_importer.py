@@ -24,7 +24,7 @@ def clean_cedict(raw_cedict):
         try:
             cleaned_entry = re.search(r"(^.*)( )(.*)( )(\[)(.*)(\])( )(/)(.*)(/)", entry)
             cleaned_cedict.update(
-                {cleaned_entry.groups()[2].encode("utf-8"): (cleaned_entry.groups()[5],
+                {cleaned_entry.groups()[2]: (cleaned_entry.groups()[5],
                                                              cleaned_entry.groups()[9].replace("\n", ""))})
         except BaseException:
             print("Dictionary could not be processed. Aborting.")
