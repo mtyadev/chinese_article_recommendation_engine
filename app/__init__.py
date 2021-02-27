@@ -1,13 +1,12 @@
-from flask import Flask, render_template, url_for, request, jsonify
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import relationship, sessionmaker
-from datetime import datetime
-from dotenv import load_dotenv, find_dotenv
+from sqlalchemy.orm import relationship
 import os
+from dotenv import load_dotenv, find_dotenv
 
-from article_searcher import FocusArticle
-from training_articles import training_articles
-from cedict_importer import cleaned_cedict
+app = Flask(__name__)
+
+from app import views
 
 # Loading environment variables
 load_dotenv(find_dotenv())
@@ -15,8 +14,6 @@ database_user = os.getenv("DB_USER")
 database_password = os.getenv("DB_PASSWORD")
 database_host = os.getenv("DB_HOST")
 database_name = os.getenv("DB_NAME")
-
-app = Flask(__name__)
 
 # Configuring and Intializing the Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://{}:{}@{}/{}'.format(database_user, database_password,
@@ -98,43 +95,4 @@ class CharactersInArticle(db.Model):
     article_id = db.Column(db.Integer, db.ForeignKey("article.id"), primary_key=True)
     times_used_in_article = db.Column(db.Integer, nullable=False)
     article = relationship("Article")
-
-# Loading Article
-article = FocusArticle(training_articles[0][0], training_articles[0][1], cleaned_cedict)
-
-@app.route('/')
-def index():
-    return render_template("index.html", context_dictionary=article.context_dictionary,
-                           article=article.annotated_sentences)
-
-@app.route('/check', methods = ["GET", "POST"])
-def check():
-    if request.method == "POST":
-        req = request.form.getlist('unknown')
-    return render_template("check.html", req=req, characters_for_db_export=article.characters_for_db_export)
-
-@app.route('/completed', methods = ["GET", "POST"])
-def completed():
-    if request.method == "POST":
-        req = request.form.getlist('unknown')
-        for element in req:
-            characters = element.split(":")[0]
-            pinyin = element.split(":")[1].split(",")[0].replace("'","").replace("(","")
-            translation = element.split(":")[1].split(",")[1].replace("'","").replace("(","")
-            new_db_entry = CharactersDictionary(characters,pinyin,translation)
-            db.session.add(new_db_entry)
-            db.session.commit()
-
-    return render_template("completed.html", req=req)
-
-if __name__ == "__main__":
-    # Initialize Characters Dictionary If Empty
-    initialize_characters_dictionary = False # Make configurable
-    if initialize_characters_dictionary:
-        dictionary_entries = []
-        for key, value in cleaned_cedict.items():
-            dictionary_entries.append(CharactersDictionary(key, value[0], value[1]))
-        db.session.add_all(dictionary_entries)
-        db.session.commit()
-    app.run(debug=True)
 
