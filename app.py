@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, sessionmaker
 from datetime import datetime
 from dotenv import load_dotenv, find_dotenv
 import os
@@ -121,12 +121,20 @@ def completed():
             characters = element.split(":")[0]
             pinyin = element.split(":")[1].split(",")[0].replace("'","").replace("(","")
             translation = element.split(":")[1].split(",")[1].replace("'","").replace("(","")
-            new_db_entry = Characters(characters,pinyin,translation,False,99999,99999)
+            new_db_entry = CharactersDictionary(characters,pinyin,translation)
             db.session.add(new_db_entry)
             db.session.commit()
 
     return render_template("completed.html", req=req)
 
 if __name__ == "__main__":
+    # Initialize Characters Dictionary If Empty
+    initialize_characters_dictionary = False # Make configurable
+    if initialize_characters_dictionary:
+        dictionary_entries = []
+        for key, value in cleaned_cedict.items():
+            dictionary_entries.append(CharactersDictionary(key, value[0], value[1]))
+        db.session.add_all(dictionary_entries)
+        db.session.commit()
     app.run(debug=True)
 
