@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
-
+from app import db
+from .models import CharactersDictionary
 import requests
 from bs4 import BeautifulSoup
 from websites import websites
@@ -50,8 +51,12 @@ class FocusArticle():
         return characters_for_db_export
 
     def _find_best_dict_match(self, tokens):
-        if tokens.encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
+        # Testing Query!
+        import pdb; pdb.set_trace()
+        if True == True:
+            #if tokens.encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
             # exact match
+            # Testing Query END!
             return '<a href="#{}">{}</a>'.format(tokens, tokens)
         else:
             # split into groups and find longest matches

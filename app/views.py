@@ -1,8 +1,8 @@
 from app import app
 from flask import render_template, request
-from article_searcher import FocusArticle
+from app.article_searcher import FocusArticle
 from training_articles import training_articles
-from cedict_importer import cleaned_cedict
+from app.cedict_importer import cleaned_cedict
 
 # Loading Article
 article = FocusArticle(training_articles[0][0], training_articles[0][1], cleaned_cedict)
