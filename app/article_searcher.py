@@ -51,12 +51,7 @@ class FocusArticle():
         return characters_for_db_export
 
     def _find_best_dict_match(self, tokens):
-        # Testing Query!
-        import pdb; pdb.set_trace()
-        if True == True:
-            #if tokens.encode("utf-8", errors="ignore") in self.chinese_english_dictionary:
-            # exact match
-            # Testing Query END!
+        if CharactersDictionary.query.filter_by(characters=tokens).first():
             return '<a href="#{}">{}</a>'.format(tokens, tokens)
         else:
             # split into groups and find longest matches
@@ -65,19 +60,14 @@ class FocusArticle():
             search_right_most_token = len(token_parts)
             # Sliding a window from right (search right most token) to left trying to find the longest match
             for run, token in enumerate(token_parts):
-                # If there is a match in the current window and the next bigger window looking ahead to the left is not
-                if "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]).encode("utf-8", errors="ignore") \
-                    in self.chinese_english_dictionary \
-                    and "".join(token_parts[len(token_parts)-(run + 2):search_right_most_token]).encode("utf-8", errors="ignore")\
-                    not in self.chinese_english_dictionary:
+                # If there is a match in the current window and none in the next wider window looking ahead to the left
+                if CharactersDictionary.query.filter_by(characters="".join(token_parts[len(token_parts)-(run + 1): search_right_most_token])).first() and CharactersDictionary.query.filter_by(characters="".join(token_parts[len(token_parts)-(run + 2):search_right_most_token])).first() is None:
                     # Append the found match including dictionary link
                     longest_matches.append('<a href="#{}">{}</a>'.format("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]), "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token])))
                     search_right_most_token = len(token_parts) - (run + 1)
 
                 # If the window has reached the left most token and does not find a match
-                elif run + 1 == len(token_parts) \
-                    and "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]).encode("utf-8", errors="ignore")\
-                    not in self.chinese_english_dictionary:
+                elif run + 1 == len(token_parts) and CharactersDictionary.query.filter_by(characters="".join(token_parts[len(token_parts)-(run + 1):search_right_most_token])).first() is None:
                     # Append without dictionary link
                     longest_matches.append("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]))
                 for x in reversed(longest_matches):

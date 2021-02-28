@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+
 from dotenv import load_dotenv, find_dotenv
 import os
 from .extensions import db
@@ -18,6 +19,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://{}:{}@{}/{}'.format(databa
                                                                           database_host, database_name)
 
 db.init_app(app)
+
+
 
 
 from app import views
