@@ -61,18 +61,26 @@ class FocusArticle():
             # Sliding a window from right (search right most token) to left trying to find the longest match
             for run, token in enumerate(token_parts):
                 # If there is a match in the current window and none in the next wider window looking ahead to the left
-                if CharactersDictionary.query.filter_by(characters="".join(token_parts[len(token_parts)-(run + 1): search_right_most_token])).first() and CharactersDictionary.query.filter_by(characters="".join(token_parts[len(token_parts)-(run + 2):search_right_most_token])).first() is None:
+                if CharactersDictionary.query.filter_by(
+                        characters="".join(token_parts[len(token_parts)-(run + 1): search_right_most_token])).first() and \
+                        CharactersDictionary.query.filter_by(
+                            characters="".join(token_parts[len(token_parts)-(run + 2):search_right_most_token])).first() is None:
                     # Append the found match including dictionary link
-                    longest_matches.append('<a href="#{}">{}</a>'.format("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]), "".join(token_parts[len(token_parts)-(run + 1):search_right_most_token])))
+                    longest_matches.append(
+                        '<a href="#{}">{}</a>'.format("".join(
+                            token_parts[len(token_parts)-(run + 1):search_right_most_token]), "".join(
+                            token_parts[len(token_parts)-(run + 1):search_right_most_token])))
                     search_right_most_token = len(token_parts) - (run + 1)
 
                 # If the window has reached the left most token and does not find a match
-                elif run + 1 == len(token_parts) and CharactersDictionary.query.filter_by(characters="".join(token_parts[len(token_parts)-(run + 1):search_right_most_token])).first() is None:
+                elif run + 1 == len(token_parts) and \
+                        CharactersDictionary.query.filter_by(
+                            characters="".join(token_parts[len(token_parts)-(run + 1):search_right_most_token])).first() is None:
                     # Append without dictionary link
                     longest_matches.append("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]))
                 for x in reversed(longest_matches):
                     print(x.encode("utf-8"))
-            return "".join(reversed(longest_matches)).replace("\n","<br /><br />").strip()
+            return "".join(reversed(longest_matches)).replace("\n", "<br /><br />").strip()
 
     @property
     def context_dictionary(self):
