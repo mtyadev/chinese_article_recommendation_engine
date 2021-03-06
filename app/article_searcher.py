@@ -29,7 +29,7 @@ class FocusArticle():
         for sentence in self.content:
             for token in jieba.cut(sentence):
                 best_dict_match = self._find_best_dict_match(token)
-                annotated_sentences.append(best_dict_match)
+                annotated_sentences.append('<a href="#{}">{}</a>'.format(best_dict_match, best_dict_match))
                 self._persist_characters_in_article(best_dict_match, article_id)
         return "".join(annotated_sentences).encode().decode("utf-8")
 
@@ -48,7 +48,7 @@ class FocusArticle():
 
     def _find_best_dict_match(self, tokens):
         if CharactersDictionary.query.filter_by(characters=tokens).first():
-            return '<a href="#{}">{}</a>'.format(tokens, tokens)
+            return tokens
         else:
             # split into groups and find longest matches
             longest_matches = []
@@ -62,10 +62,7 @@ class FocusArticle():
                         CharactersDictionary.query.filter_by(
                             characters="".join(token_parts[len(token_parts)-(run + 2):search_right_most_token])).first() is None:
                     # Append the found match including dictionary link
-                    longest_matches.append(
-                        '<a href="#{}">{}</a>'.format("".join(
-                            token_parts[len(token_parts)-(run + 1):search_right_most_token]), "".join(
-                            token_parts[len(token_parts)-(run + 1):search_right_most_token])))
+                    longest_matches.append("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]))
                     search_right_most_token = len(token_parts) - (run + 1)
 
                 # If the window has reached the left most token and does not find a match
@@ -80,7 +77,8 @@ class FocusArticle():
 
     @property
     def context_dictionary(self):
-        # Replace by database values later
+        # !!! Below is just a placeholder not to break the app, replace this by values from CharactersInArticle DB later
+        # !!!
         return {"test".encode("utf-8"): "test".encode("utf-8")}
 
     def _persist_article(self, title, url, overall_rating):
@@ -91,9 +89,18 @@ class FocusArticle():
 
     def _persist_characters_in_article(self, characters, article_id):
         ignore_list = ["<br /><br />", ""]
-        if characters not in ignore_list:
-            import pdb; pdb.set_trace()
-            #CharactersInArticle(characters, article_id, times_used_in_article)
+        if characters not in ignore_list and CharactersDictionary.query.filter_by(characters=characters).first() is not None:
+            if CharactersInArticle.query.filter_by(characters=characters, article_id=article_id).first() is None:
+                characters_in_article = CharactersInArticle(characters, article_id, 1)
+                db.session.add(characters_in_article)
+                db.session.commit()
+
+            elif CharactersInArticle.query.filter_by(characters=characters, article_id=article_id).first():
+                existing_characters_in_article = CharactersInArticle.query.filter_by(characters=characters,
+                                                                                     article_id=article_id).first()
+                existing_characters_in_article.times_used_in_article = existing_characters_in_article.times_used_in_article + 1
+                db.session.commit()
+
 
 
 

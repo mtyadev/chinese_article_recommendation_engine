@@ -74,3 +74,11 @@ class CharactersInArticle(db.Model):
     times_used_in_article = db.Column(db.Integer, nullable=False)
     article = relationship("Article")
 
+    def __init__(self, characters, article_id, times_used_in_article):
+        self.characters = characters
+        self.article_id = article_id
+        self.times_used_in_article = times_used_in_article
+
+    def __repr__(self):
+        return '<Characters in Article %r>' % self.characters
+
