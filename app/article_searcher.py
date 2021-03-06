@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from app import db
-from .models import CharactersDictionary
+from .models import CharactersDictionary, Article, CharactersInArticle
 import requests
 from bs4 import BeautifulSoup
 from websites import websites
@@ -18,23 +18,19 @@ class FocusArticle():
     def content(self):
         res = requests.get(self.article_url)
         soup = BeautifulSoup(res.content, features="html.parser")
-        article = soup.find("div", {"id": websites[self.website]}).prettify()
-        return article.encode("utf-8")
-
-    @property
-    def content_sentences(self):
-        res = requests.get(self.article_url)
-        soup = BeautifulSoup(res.content, features="html.parser")
         article = soup.find("div", {"id": websites[self.website]}).getText()
         sentences = re.findall(r'[^!?。\.\!\?]+[!?。\.\!\?]?', article)
         return sentences
 
     @property
     def annotated_sentences(self):
+        article_id = self._persist_article("test_title", self.article_url, 0)
         annotated_sentences = []
-        for sentence in self.content_sentences:
+        for sentence in self.content:
             for token in jieba.cut(sentence):
-                annotated_sentences.append(self._find_best_dict_match(token))
+                best_dict_match = self._find_best_dict_match(token)
+                annotated_sentences.append(best_dict_match)
+                self._persist_characters_in_article(best_dict_match, article_id)
         return "".join(annotated_sentences).encode().decode("utf-8")
 
     @property
@@ -84,16 +80,24 @@ class FocusArticle():
 
     @property
     def context_dictionary(self):
-        article_tokens = jieba.cut_for_search(self.content)
-        return {token.encode("utf-8"): self.chinese_english_dictionary[token.encode("utf-8")] for token in article_tokens
-                if token.encode("utf-8", errors="ignore") in self.chinese_english_dictionary}
+        # Replace by database values later
+        return {"test".encode("utf-8"): "test".encode("utf-8")}
 
-class DictionaryEntry():
-    def __init__(self, characters, pinyin, translation, difficulty_hsk):
-        self.characters = characters
-        self.pinyin = pinyin
-        self.translation = translation
-        self.difficulty_hsk = difficulty_hsk
+    def _persist_article(self, title, url, overall_rating):
+        article = Article(title=title, url=url, overall_rating=overall_rating)
+        db.session.add(article)
+        db.session.commit()
+        return article.id
+
+    def _persist_characters_in_article(self, characters, article_id):
+        ignore_list = ["<br /><br />", ""]
+        if characters not in ignore_list:
+            import pdb; pdb.set_trace()
+            #CharactersInArticle(characters, article_id, times_used_in_article)
+
+
+
+
 
 
 
