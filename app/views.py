@@ -2,15 +2,15 @@ from app import app
 from flask import render_template, request
 from app.article_searcher import FocusArticle
 from training_articles import training_articles
-from app.cedict_importer import cleaned_cedict
 
 # Loading Article
-article = FocusArticle(training_articles[0][0], training_articles[0][1], cleaned_cedict)
+article = FocusArticle(training_articles[0][0], training_articles[0][1])
 
 @app.route('/')
 def index():
+    annotated_article = article.load_content()
     return render_template("index.html", context_dictionary=article.context_dictionary,
-                           article=article.annotated_sentences)
+                           article=annotated_article)
 
 @app.route('/check', methods = ["GET", "POST"])
 def check():
