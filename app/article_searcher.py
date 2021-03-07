@@ -29,11 +29,11 @@ class FocusArticle():
                 best_dict_match = self._find_best_dict_match(token)
                 annotated_sentences.append('<a href="#{}">{}</a>'.format(best_dict_match, best_dict_match))
                 self._persist_characters_in_article(best_dict_match, article_id)
-        return "".join(annotated_sentences).encode().decode("utf-8")
-    
+        return "".join(annotated_sentences).encode().decode("utf-8"), article_id
+
     @property
     def context_dictionary(self):
-        # !!! Below is just a placeholder not to break the app, replace this by values from CharactersInArticle DB later
+        # !!! Build this based on load article, article id
         # !!!
         return {"test".encode("utf-8"): "test".encode("utf-8")}
 

@@ -8,7 +8,7 @@ article = FocusArticle(training_articles[0][0], training_articles[0][1])
 
 @app.route('/')
 def index():
-    annotated_article = article.load_content()
+    annotated_article, article_id = article.load_content()
     return render_template("index.html", context_dictionary=article.context_dictionary,
                            article=annotated_article)
 
