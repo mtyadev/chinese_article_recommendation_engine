@@ -11,7 +11,6 @@ class FocusArticle():
     def __init__(self, article_url, website):
         self.article_url = article_url
         self.website = website
-        self.cached_context_dictionary = self.context_dictionary
 
     @property
     def content(self):
@@ -31,11 +30,11 @@ class FocusArticle():
                 self._persist_characters_in_article(best_dict_match, article_id)
         return "".join(annotated_sentences).encode().decode("utf-8"), article_id
 
-    @property
-    def context_dictionary(self):
-        # !!! Build this based on load article, article id
-        # !!!
-        return {"test".encode("utf-8"): "test".encode("utf-8")}
+    def create_context_dictionary(self, article_id):
+        return CharactersInArticle.query.filter_by(
+            article_id=article_id).join(
+            CharactersDictionary, CharactersInArticle.characters == CharactersDictionary.characters).add_columns(
+            CharactersDictionary.characters, CharactersDictionary.pinyin, CharactersDictionary.translation).all()
 
     def _find_best_dict_match(self, tokens):
         if CharactersDictionary.query.filter_by(characters=tokens).first():

@@ -15,9 +15,9 @@
     <h1>Dictionary</h1>
         <div id = "fixedglossary">
             <form action="/check" method="POST">
-            {% for key, value in context_dictionary.items() %}
-               <div id="{{key.decode('utf-8')}}">
-                   <input type="checkbox" data-toggle="toggle" name="unknown" value="{{key.decode('utf-8')}} : {{value}}"> {{key.decode('utf-8')}} : {{value}}
+            {% for element in context_dictionary %}
+               <div id="{{element[1]}}">
+                   <input type="checkbox" data-toggle="toggle" name="unknown" value="{{element[1]}}"> {{element[1]}} : {{element[2]}} --- {{element[3]}}
                </div>
             {% endfor %}
             <br />
