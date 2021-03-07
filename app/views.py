@@ -15,19 +15,17 @@ def index():
 @app.route('/check', methods = ["GET", "POST"])
 def check():
     if request.method == "POST":
-        req = request.form.getlist('unknown')
-    return render_template("check.html", req=req, characters_for_db_export=article.characters_for_db_export)
+        unknown_characters = request.form.getlist('unknown')
+    print("Testing Unknown Characters")
+    print(unknown_characters)
+    return render_template("check.html", unknown_characters=unknown_characters)
 
 @app.route('/completed', methods = ["GET", "POST"])
 def completed():
     if request.method == "POST":
         req = request.form.getlist('unknown')
         for element in req:
-            characters = element.split(":")[0]
-            pinyin = element.split(":")[1].split(",")[0].replace("'","").replace("(","")
-            translation = element.split(":")[1].split(",")[1].replace("'","").replace("(","")
-            new_db_entry = CharactersDictionary(characters,pinyin,translation)
-            db.session.add(new_db_entry)
-            db.session.commit()
+            print(element)
+
 
     return render_template("completed.html", req=req)

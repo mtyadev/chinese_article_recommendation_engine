@@ -15,15 +15,28 @@
     <h1>Add to unknown characters list?</h1>
         <div id = "fixedglossary">
             <form action="/completed" method="POST">
-                {% for element in req %}
-                    {% set key = element.split(":")[0] %}
-                    {% set value = element.split(":")[1] %}
-                    <div id="{{key}}">
-                        <input type="checkbox" data-toggle="toggle" name="unknown" value="{{key}} : {{value}}" checked=checked>
-                        {{key}} : {{value}}
-                    </div>
-                {% endfor %}
-                <br />
+              <form action="/check" method="POST">
+                <table class="table">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">Unknown?</th>
+                      <th scope="col">汉字</th>
+                      <th scope="col">Pinyin</th>
+                      <th scope="col">Translation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for element in unknown_characters %}
+                    <tr>
+                        <td>{{element}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+
                 <button type="submit" class ="btn btn-primary" name="send">Add to Unknown Characters</button>
             </form>
         </div>
