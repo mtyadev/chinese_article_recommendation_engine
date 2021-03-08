@@ -27,6 +27,12 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     users_article_assessment = relationship("UsersArticleAssessment")
 
+    def __init__(self, first_name, last_name, e_mail, password):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.e_mail = e_mail
+        self.password = password
+
     def __repr__(self):
         return '<User %r>' % self.e_mail
 
@@ -53,6 +59,12 @@ class UsersCharacterKnowledge(db.Model):
     times_seen = db.Column(db.Integer, nullable=False)
     characters_known = db.Column(db.Boolean, nullable=False)
     child = relationship("User")
+
+    def __init__(self,characters, user_id, times_seen, characters_known):
+        self.characters = characters
+        self.user_id = user_id
+        self.times_seen = times_seen
+        self.characters_known = characters_known
 
 class UsersArticleAssessment(db.Model):
 

@@ -1,8 +1,8 @@
-from app import app
+from app import app, db
 from flask import render_template, request
 from app.article_searcher import FocusArticle
 from training_articles import training_articles
-from .models import CharactersDictionary, Article, CharactersInArticle
+from .models import CharactersDictionary, Article, CharactersInArticle, UsersCharacterKnowledge
 
 @app.route('/')
 def index():
@@ -14,19 +14,31 @@ def index():
 @app.route('/check', methods = ["GET", "POST"])
 def check():
     if request.method == "POST":
+        article_id = int(request.form.getlist('article_id')[0])
         unknown_characters_raw = request.form.getlist('unknown')
         unknown_characters = []
         for unknown_character in unknown_characters_raw:
             unknown_characters.append(CharactersDictionary.query.filter_by(characters=unknown_character).first())
-        article_id = int(request.form.getlist('article_id')[0])
+
     return render_template("check.html", unknown_characters=unknown_characters, article_id=article_id)
 
 @app.route('/completed', methods = ["GET", "POST"])
 def completed():
     if request.method == "POST":
-        unknown_characters_raw = request.form.getlist('unknown')
-        unknown_characters = []
-        for unknown_character in unknown_characters_raw:
-            unknown_characters.append(CharactersDictionary.query.filter_by(characters=unknown_character).first())
         article_id = int(request.form.getlist('article_id')[0])
+        unknown_characters = request.form.getlist('unknown')
+
+        # Get all characters in current article
+        characters_in_article = CharactersInArticle.query.filter_by(article_id=article_id).all()
+
+        for dictionary_entry in characters_in_article:
+            if dictionary_entry.characters not in unknown_characters:
+                users_character_knowledge = UsersCharacterKnowledge(dictionary_entry.characters, 1,
+                                                                    dictionary_entry.times_used_in_article, True)
+            else:
+                users_character_knowledge = UsersCharacterKnowledge(dictionary_entry.characters, 1,
+                                                                    dictionary_entry.times_used_in_article, False)
+            db.session.add(users_character_knowledge)
+            db.session.commit()
+
     return render_template("completed.html", unknown_characters=unknown_characters, article_id=article_id)
