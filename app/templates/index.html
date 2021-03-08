@@ -17,8 +17,8 @@
         <table class="table">
           <thead class="thead-dark">
             <tr>
-              <th scope="col">Unknown?</th>
-              <th scope="col">汉字</th>
+              <th scope="col">Unknown</th>
+              <th scope="col">Characters</th>
               <th scope="col">Pinyin</th>
               <th scope="col">Translation</th>
             </tr>
@@ -26,7 +26,7 @@
           <tbody>
           {% for element in context_dictionary %}
             <tr>
-              <th scope="row" id="{{element[1]}}"><input type="checkbox" data-toggle="toggle" name="unknown" value="{{element[1]}}"></th>
+              <td><input type="checkbox" data-toggle="toggle" name="unknown" value="{{element[1]}}"></td>
               <td>{{element[1]}}</td>
               <td>{{element[2]}}</td>
               <td>{{element[3]}}</td>

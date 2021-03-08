@@ -11,6 +11,8 @@ class FocusArticle():
     def __init__(self, article_url, website):
         self.article_url = article_url
         self.website = website
+        self.annotated_content, self.article_id = self.load_content()
+        self.context_dictionary = self.create_context_dictionary(self.article_id)
 
     @property
     def content(self):
