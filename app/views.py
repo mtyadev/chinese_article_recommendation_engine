@@ -27,32 +27,39 @@ def completed():
     if request.method == "POST":
         article_id = int(request.form.getlist('article_id')[0])
         unknown_characters = request.form.getlist('unknown')
+        # !!!Setting TEST USER ID, Replace by Dynamic User ID Later!!!
+        user_id = 2
+        # !!!END Setting TEST USER ID!!!
 
         # Get all characters in current article
         characters_in_article = CharactersInArticle.query.filter_by(article_id=article_id).all()
 
         for dictionary_entry in characters_in_article:
             # Add characters to users_character_knowledge collection in case user sees characters for the first time
-            if UsersCharacterKnowledge.query.filter_by(user_id=1, characters=dictionary_entry.characters).first() is None:
+            if UsersCharacterKnowledge.query.filter_by(
+                    user_id=user_id, characters=dictionary_entry.characters).first() is None:
                 if dictionary_entry.characters not in unknown_characters:
-                    users_character_knowledge = UsersCharacterKnowledge(dictionary_entry.characters, 1,
+                    users_character_knowledge = UsersCharacterKnowledge(dictionary_entry.characters, user_id,
                                                                     dictionary_entry.times_used_in_article, True)
                 else:
-                    users_character_knowledge = UsersCharacterKnowledge(dictionary_entry.characters, 1,
+                    users_character_knowledge = UsersCharacterKnowledge(dictionary_entry.characters, user_id,
                                                                     dictionary_entry.times_used_in_article, False)
                 db.session.add(users_character_knowledge)
                 db.session.commit()
 
             # If user has already seen the characters before, update users_character_knowledge related entries
-            elif UsersCharacterKnowledge.query.filter_by(user_id=1, characters=dictionary_entry.characters).first() is not None:
+            elif UsersCharacterKnowledge.query.filter_by(
+                    user_id=user_id, characters=dictionary_entry.characters).first() is not None:
                 existing_users_character_knowledge = UsersCharacterKnowledge.query.filter_by(
-                    user_id=1, characters=dictionary_entry.characters).first()
+                    user_id=user_id, characters=dictionary_entry.characters).first()
 
                 if dictionary_entry.characters not in unknown_characters:
-                    existing_users_character_knowledge.times_seen = existing_users_character_knowledge.times_seen + dictionary_entry.times_used_in_article
+                    existing_users_character_knowledge.times_seen = existing_users_character_knowledge.times_seen + \
+                                                                    dictionary_entry.times_used_in_article
                     existing_users_character_knowledge.characters_known = True
                 else:
-                    existing_users_character_knowledge.times_seen = existing_users_character_knowledge.times_seen + dictionary_entry.times_used_in_article
+                    existing_users_character_knowledge.times_seen = existing_users_character_knowledge.times_seen + \
+                                                                    dictionary_entry.times_used_in_article
                     existing_users_character_knowledge.characters_known = False
 
                 db.session.commit()
