@@ -63,8 +63,8 @@ class FocusArticle():
                             characters="".join(token_parts[len(token_parts)-(run + 1):search_right_most_token])).first() is None:
                     # Append without dictionary link
                     longest_matches.append("".join(token_parts[len(token_parts)-(run + 1):search_right_most_token]))
-                for x in reversed(longest_matches):
-                    print(x.encode("utf-8"))
+                #for x in reversed(longest_matches):
+                #    print(x.encode("utf-8"))
             return "".join(reversed(longest_matches)).replace("\n", "<br /><br />").strip()
 
     def _persist_article(self, title, url, overall_rating):
