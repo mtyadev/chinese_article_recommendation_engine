@@ -13,16 +13,32 @@
         </div>
 
     <h1>Dictionary</h1>
-        <div id = "fixedglossary">
-            <form action="/check" method="POST">
-            {% for key, value in context_dictionary.items() %}
-               <div id="{{key.decode('utf-8')}}">
-                   <input type="checkbox" data-toggle="toggle" name="unknown" value="{{key.decode('utf-8')}} : {{value}}"> {{key.decode('utf-8')}} : {{value}}
-               </div>
-            {% endfor %}
-            <br />
-                <button type="submit" class ="btn btn-primary" name="send">Add to Unknown Characters</button>
-            </form>
-        </div>
+    <form action="/check" method="POST">
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Unknown</th>
+              <th scope="col">Characters</th>
+              <th scope="col">Pinyin</th>
+              <th scope="col">Translation</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for element in context_dictionary %}
+            <tr>
+              <td><input type="checkbox" data-toggle="toggle" name="unknown" id="{{element.characters}}" value="{{element.characters}}"></td>
+              <td>{{element.characters}}</td>
+              <td>{{element.pinyin}}</td>
+              <td>{{element.translation}}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+
+        <br />
+        <input type="hidden" name="article_id" value={{article_id}}>
+        <button type="submit" class ="btn btn-primary" name="send">Add to Unknown Characters</button>
+    </form>
+
 {% endblock %}
 
