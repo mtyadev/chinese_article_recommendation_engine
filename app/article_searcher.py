@@ -27,8 +27,7 @@ class FocusArticle():
         annotated_sentences = []
         for sentence in self.content:
             for token in jieba.cut(sentence):
-                print("\n" + token)
-                best_dict_matches = self._find_longest_matches(token)
+                best_dict_matches = self._find_longest_matches(token, [])
                 for best_dict_match in reversed(best_dict_matches):
                     if best_dict_match[1] == "available_in_dictionary":
                         annotated_sentences.append('<a href="#{}">{}</a>'.format(best_dict_match[0], best_dict_match[0]))
@@ -54,9 +53,14 @@ class FocusArticle():
         Returns a list containing tuples specifying the tokens and whether or not the specific token is available in the dictionary.
         """
         # If all tokens have been searched in the dictionary return the completed results and leave the function
-        if len(tokens) - 1 <= 0:
-            print(searched_in_dictionary)
+        print("Searched in Dictionary")
+        print(searched_in_dictionary)
+        if len(tokens) - 1 <= -1:
             return searched_in_dictionary
+        # If tokens pre-split by jieba are a direct match, just return this match and leave the function
+        elif CharactersDictionary.query.filter_by(characters=tokens).first():
+            searched_in_dictionary.append((tokens, "available_in_dictionary"))
+            return self._find_longest_matches([], searched_in_dictionary)
         else:
             # Create a search window starting with the right most token and iterate over all tokens
             for right_window_edge in range(0, len(tokens)):
