@@ -29,15 +29,22 @@ a: {
 }
 
 a:link{
-	color:#ff6600;
 	text-decoration: none;
 }
- a:visited{color:red;}
- a:hover{color:#f00;}
- a:active{color:#f00;}
+ a:visited{color:#11d;}
+ a:hover{color:#33d;}
+ a:active{color:#33d;}
 
 .already_known{
-	color: #333333;
+	color: #1a1;
+}
+
+.not_known_yet{
+	color: orange;
+}
+
+.not_seen_yet{
+	color: #121;
 }
 
 table {
