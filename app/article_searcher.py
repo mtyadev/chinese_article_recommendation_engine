@@ -29,11 +29,12 @@ class FocusArticle():
             for token in jieba.cut(sentence):
                 best_dict_matches = self._find_longest_matches(token, [])
                 for best_dict_match in reversed(best_dict_matches):
+                    cleaned_dict_match = best_dict_match[0].replace("\n", "<br /><br />").strip()
                     if best_dict_match[1] == "available_in_dictionary":
-                        annotated_sentences.append('<a href="#{}">{}</a>'.format(best_dict_match[0], best_dict_match[0]))
-                        self._persist_characters_in_article(best_dict_match[0], article_id)
+                        annotated_sentences.append('<a href="#{}">{}</a>'.format(cleaned_dict_match, cleaned_dict_match))
+                        self._persist_characters_in_article(cleaned_dict_match, article_id)
                     else:
-                        annotated_sentences.append(best_dict_match[0])
+                        annotated_sentences.append(cleaned_dict_match)
 
         return "".join(annotated_sentences).encode().decode("utf-8"), article_id
 
@@ -55,12 +56,12 @@ class FocusArticle():
         # If all tokens have been searched in the dictionary return the completed results and leave the function
         print("Searched in Dictionary")
         print(searched_in_dictionary)
-        if len(tokens) - 1 <= -1:
+        if not tokens:
             return searched_in_dictionary
         # If tokens pre-split by jieba are a direct match, just return this match and leave the function
-        elif CharactersDictionary.query.filter_by(characters=tokens).first():
-            searched_in_dictionary.append((tokens, "available_in_dictionary"))
-            return self._find_longest_matches([], searched_in_dictionary)
+        # elif CharactersDictionary.query.filter_by(characters=tokens).first():
+        #     searched_in_dictionary.append((tokens, "available_in_dictionary"))
+        #     return self._find_longest_matches([], searched_in_dictionary)
         else:
             # Create a search window starting with the right most token and iterate over all tokens
             for right_window_edge in range(0, len(tokens)):
@@ -80,12 +81,13 @@ class FocusArticle():
                 # If there are matches add longest match to list.
                 # Remove matching tokens from the list and recursively call function again
                 if matches:
-                    tokens = tokens.replace(max(matches, key=len), "")
+                    tokens = tokens[:-len(max(matches, key=len))]
+                    # tokens = tokens.replace(max(matches, key=len), "")
                     searched_in_dictionary.append((max(matches, key=len), "available_in_dictionary"))
                     return self._find_longest_matches(tokens, searched_in_dictionary)
                 # If there are no matches, append tokens to list, highlighting that they are not available
                 else:
-                    searched_in_dictionary.append((tokens[-1:], "not_available_in_dictionary"))
+                    searched_in_dictionary.append((tokens[right_window_edge-1:], "not_available_in_dictionary"))
                     return self._find_longest_matches(tokens[:-1], searched_in_dictionary)
 
 
