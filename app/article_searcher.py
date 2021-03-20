@@ -1,11 +1,12 @@
 # -*- coding:utf-8 -*-
 from app import db
-from .models import CharactersDictionary, Article, CharactersInArticle
+from .models import CharactersDictionary, Article, CharactersInArticle, UsersCharacterKnowledge
 import requests
 from bs4 import BeautifulSoup
-from websites import websites
+from websites import websites, headers
 import jieba
 import re
+
 
 class FocusArticle():
     def __init__(self, article_url, website):
@@ -16,9 +17,9 @@ class FocusArticle():
 
     @property
     def content(self):
-        res = requests.get(self.article_url)
+        res = requests.get(self.article_url, headers=headers)
         soup = BeautifulSoup(res.content, features="html.parser")
-        article = soup.find("div", {"id": websites[self.website]}).getText()
+        article = soup.find("div", {websites[self.website][0]: websites[self.website][1]}).getText()
         sentences = re.findall(r'[^!?。\.\!\?]+[!?。\.\!\?]?', article)
         return sentences
 
@@ -29,9 +30,19 @@ class FocusArticle():
             for token in jieba.cut(sentence):
                 best_dict_matches = self._find_longest_matches(token, [])
                 for best_dict_match in reversed(best_dict_matches):
+                    characters_known = "not_seen_yet"
                     cleaned_dict_match = best_dict_match[0].replace("\n", "<br /><br />").strip()
                     if best_dict_match[1] == "available_in_dictionary":
-                        annotated_sentences.append('<a href="#{}">{}</a>'.format(cleaned_dict_match, cleaned_dict_match))
+
+                        characters_already_seen = UsersCharacterKnowledge.query.filter_by(
+                            characters=cleaned_dict_match, user_id=2).first()
+                        if characters_already_seen:
+                            if characters_already_seen.characters_known:
+                                characters_known = "already_known"
+                            else:
+                                characters_known = "not_known_yet"
+                        annotated_sentences.append('<a href="#{}" class="{}">{}</a>'.format(
+                            cleaned_dict_match, characters_known, cleaned_dict_match))
                         self._persist_characters_in_article(cleaned_dict_match, article_id)
                     else:
                         annotated_sentences.append(cleaned_dict_match)
