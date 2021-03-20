@@ -3,9 +3,10 @@ from app import db
 from .models import CharactersDictionary, Article, CharactersInArticle, UsersCharacterKnowledge
 import requests
 from bs4 import BeautifulSoup
-from websites import websites
+from websites import websites, headers
 import jieba
 import re
+
 
 class FocusArticle():
     def __init__(self, article_url, website):
@@ -16,9 +17,9 @@ class FocusArticle():
 
     @property
     def content(self):
-        res = requests.get(self.article_url)
+        res = requests.get(self.article_url, headers=headers)
         soup = BeautifulSoup(res.content, features="html.parser")
-        article = soup.find("div", {"id": websites[self.website]}).getText()
+        article = soup.find("div", {websites[self.website][0]: websites[self.website][1]}).getText()
         sentences = re.findall(r'[^!?。\.\!\?]+[!?。\.\!\?]?', article)
         return sentences
 
