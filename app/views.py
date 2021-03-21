@@ -2,12 +2,12 @@ from app import app, db
 from flask import render_template, request
 from app.article_searcher import FocusArticle
 from training_articles import training_articles
-from .models import CharactersDictionary, Article, CharactersInArticle, UsersCharacterKnowledge
+from .models import CharactersDictionary, Article, CharactersInArticle, UsersCharacterKnowledge, UsersArticleAssessment
 
 @app.route('/')
 def index():
     # Loading Article
-    article = FocusArticle(training_articles[7][0], training_articles[7][1])
+    article = FocusArticle(training_articles[8][0], training_articles[8][1])
     return render_template("index.html", article=article.annotated_content, article_id=article.article_id,
                            context_dictionary=article.context_dictionary)
 
@@ -22,8 +22,8 @@ def check():
 
     return render_template("check.html", unknown_characters=unknown_characters, article_id=article_id)
 
-@app.route('/completed', methods = ["GET", "POST"])
-def completed():
+@app.route('/article_assessment', methods = ["GET", "POST"])
+def article_assessment():
     if request.method == "POST":
         article_id = int(request.form.getlist('article_id')[0])
         unknown_characters = request.form.getlist('unknown')
@@ -64,4 +64,19 @@ def completed():
 
                 db.session.commit()
 
-    return render_template("completed.html", unknown_characters=unknown_characters, article_id=article_id)
+    return render_template("article_assessment.html", article_id=article_id)
+
+
+@app.route('/completed', methods = ["GET", "POST"])
+def completed():
+    if request.method == "POST":
+        article_id = int(request.form.getlist('article_id')[0])
+        # !!!Setting TEST USER ID, Replace by Dynamic User ID Later!!!
+        user_id = 2
+        # !!!END Setting TEST USER ID!!!
+        users_article_assessment = UsersArticleAssessment(user_id, article_id, int(request.form.getlist('article_rating')[0]),
+                                   int(request.form.getlist('article_difficulty')[0]), request.form.getlist('article_tags')[0])
+        db.session.add(users_article_assessment)
+        db.session.commit()
+
+    return render_template("completed.html", article_id=article_id)

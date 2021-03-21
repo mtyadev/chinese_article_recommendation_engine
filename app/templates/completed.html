@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Index{% endblock %}
+{% block title %}Completed{% endblock %}
 {% block head %}
   {{ super() }}
     <style type="text/css">
@@ -7,33 +7,6 @@
     </style>
 {% endblock %}
 {% block body %}
-    <h1>Add to unknown characters list?</h1>
-      <form action="/tbd" method="POST">
-        <table class="table">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">Unknown</th>
-              <th scope="col">Characters</th>
-              <th scope="col">Pinyin</th>
-              <th scope="col">Translation</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for element in unknown_characters %}
-            <tr>
-              <td><input type="checkbox" data-toggle="toggle" name="unknown" id="{{element.characters}}" value="{{element.characters}}"></td>
-              <td>{{element.characters}}</td>
-              <td>{{element.pinyin}}</td>
-              <td>{{element.translation}}</td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-
-        <br />
-        <input type="hidden" name="article_id" value={{article_id}}>
-        <button type="submit" class ="btn btn-primary" name="send">Add to Unknown Characters</button>
-    </form>
-
+    <h1>You have completed reading this article :)</h1>
 {% endblock %}
 

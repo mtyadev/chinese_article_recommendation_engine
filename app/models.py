@@ -77,6 +77,13 @@ class UsersArticleAssessment(db.Model):
     tags = db.Column(db.String, nullable=False)
     article = relationship("Article")
 
+    def __init__(self, user_id, article_id, rating, difficulty, tags):
+        self.user_id = user_id
+        self.article_id = article_id
+        self.rating = rating
+        self.difficulty = difficulty
+        self.tags = tags
+
 class CharactersInArticle(db.Model):
 
     __tablename__ = "characters_in_article"
