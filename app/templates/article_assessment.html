@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+  {{ super() }}
+    <style type="text/css">
+    .important { color: #336699; }
+    </style>
+{% endblock %}
+{% block body %}
+    <h1>Rate Article</h1>
+      <form action="/completed" method="POST">
+        <div class="form-group">
+          <label for="article_rating">Article Rating</label>
+          <select class="form-control" id="article_rating" name="article_rating">
+            <option label="1 - very boring">1</option>
+            <option label="2">2</option>
+            <option label="3">3</option>
+            <option label="4">4</option>
+            <option label="5">5</option>
+            <option label="6">6</option>
+            <option label="7">7</option>
+            <option label="8">8</option>
+            <option label="9">9</option>
+            <option label="10 - very interesting">10</option>
+          </select>
+          <small id="rate_article_help" class="form-text text-muted">
+            Please rate the article on a scale from [1 - very boring] to [10 - very intersting]
+          </small>
+        </div>
+        <div class="form-group">
+          <label for="article_difficulty">Article Difficulty</label>
+          <select class="form-control" id="article_difficulty" name="article_difficulty">
+            <option label="1 - very hard">1</option>
+            <option label="2">2</option>
+            <option label="3">3</option>
+            <option label="4">4</option>
+            <option label="5 - very easy">5</option>
+          </select>
+          <small id="article_difficulty_help" class="form-text text-muted">
+            Please rate the difficulty on a scale from [1 - very hard] to [5 - very easy]
+          </small>
+        </div>
+        <div class="form-group">
+          <label for="article_rating">Article Tags</label>
+          <textarea class="form-control" id="article_tags" name="article_tags" rows="3"></textarea>
+          <small id="article_tags_help" class="form-text text-muted">
+            Please enter relevant tags, separated by semicolons (;)
+          </small>
+        </div>
+        <input type="hidden" name="article_id" value={{article_id}}>
+        <button type="submit" class="btn btn-primary" name="send">Submit</button>
+      </form>
+
+{% endblock %}
+
