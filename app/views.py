@@ -7,7 +7,7 @@ from .models import CharactersDictionary, Article, CharactersInArticle, UsersCha
 @app.route('/')
 def index():
     # Loading Article
-    article = FocusArticle(training_articles[8][0], training_articles[8][1])
+    article = FocusArticle(training_articles[9][0], training_articles[9][1])
     return render_template("index.html", article=article.annotated_content, article_id=article.article_id,
                            context_dictionary=article.context_dictionary)
 
