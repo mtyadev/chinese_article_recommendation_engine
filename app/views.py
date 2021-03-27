@@ -6,9 +6,13 @@ from .models import CharactersDictionary, Article, CharactersInArticle, UsersCha
 
 @app.route('/')
 def index():
+    return render_template("index.html", training_articles=training_articles)
+
+@app.route('/article')
+def article():
     # Loading Article
-    article = FocusArticle(training_articles[8][0], training_articles[8][1])
-    return render_template("index.html", article=article.annotated_content, article_id=article.article_id,
+    article = FocusArticle(request.args.get('article'), request.args.get('website'))
+    return render_template("article.html", article=article.annotated_content, article_id=article.article_id,
                            context_dictionary=article.context_dictionary)
 
 @app.route('/check', methods = ["GET", "POST"])

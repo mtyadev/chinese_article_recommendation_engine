@@ -27,6 +27,7 @@ class FocusArticle():
         article_id = self._persist_article("test_title", self.article_url, 0)
         annotated_sentences = []
         for sentence in self.content:
+            annotated_sentences.append("<br /><br />")
             for token in jieba.cut(sentence):
                 best_dict_matches = self._find_longest_matches(token, [])
                 for best_dict_match in reversed(best_dict_matches):
