@@ -7,7 +7,24 @@
     </style>
 {% endblock %}
 {% block body %}
-    <h1>Articles Overview</h1>
+    <h1>New Article</h1>
+      <form action="/article" method="POST">
+        <div class="form-group">
+          <label for="title">Copy / Paste Title</label>
+          <input class="form-control" type="text" id="title" name="title">
+        </div>
+        <div class="form-group">
+          <label for="article">Copy / Paste Article</label>
+          <textarea class="form-control" id="article" name="article" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <input type="hidden" name="website" value="local"}>
+        </div>
+        <button type="submit" class="btn btn-primary" name="send">Read Article</button>
+      </form>
+
+    <h1>Suggested Articles</h1>
+
         <table class="table">
           <thead class="thead-dark">
             <tr>
