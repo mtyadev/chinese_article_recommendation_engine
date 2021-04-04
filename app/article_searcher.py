@@ -9,22 +9,33 @@ import re
 
 
 class FocusArticle():
-    def __init__(self, article_url, website):
-        self.article_url = article_url
+    def __init__(self, article, website):
+        self.article = article
         self.website = website
         self.annotated_content, self.article_id = self.load_content()
         self.context_dictionary = self.create_context_dictionary(self.article_id)
 
     @property
     def content(self):
-        res = requests.get(self.article_url, headers=headers)
-        soup = BeautifulSoup(res.content, features="html.parser")
-        article = soup.find("div", {websites[self.website][0]: websites[self.website][1]}).getText()
+        """
+        Either loads article from a remote website or a locally pasted article.
+        By default load from website.
+        """
+        article = ""
+        if self.website != "local":
+            res = requests.get(self.article, headers=headers)
+            soup = BeautifulSoup(res.content, features="html.parser")
+            article = soup.find("div", {websites[self.website][0]: websites[self.website][1]}).getText()
+        elif self.website == "local":
+            article = self.article
         sentences = re.findall(r'[^!?。\.\!\?]+[!?。\.\!\?]?', article)
         return sentences
 
     def load_content(self):
-        article_id = self._persist_article("test_title", self.article_url, 0)
+        if self.website != "local":
+            article_id = self._persist_article("test_title", self.article, 0)
+        elif self.website == "local":
+            article_id = self._persist_article("test_title", "Local", 0)
         annotated_sentences = []
         for sentence in self.content:
             annotated_sentences.append("<br /><br />")
@@ -101,57 +112,6 @@ class FocusArticle():
                 else:
                     searched_in_dictionary.append((tokens[right_window_edge-1:], "not_available_in_dictionary"))
                     return self._find_longest_matches(tokens[:-1], searched_in_dictionary)
-
-
-    # def _find_best_dict_match(self, tokens):
-    #     if CharactersDictionary.query.filter_by(characters=tokens).first():
-    #         return tokens
-    #     else:
-    #         # split into groups and find longest matches
-    #         longest_matches = []
-    #         token_parts = list(tokens)
-    #         right_most_token = len(token_parts)
-    #         # Sliding a window from right (right most token) in one token steps to the left trying to find the longest dictionary match
-    #         for run, token in enumerate(token_parts):
-    #             current_window = token_parts[right_most_token-(run + 1): right_most_token]
-    #             window_looking_ahead = token_parts[right_most_token-(run + 2):right_most_token]
-    #             #Testing Logic Start
-    #             print("run\n")
-    #             print(run)
-    #             print("right_most_token")
-    #             print(right_most_token)
-    #             print("current_window\n")
-    #             print("".join(current_window))
-    #             print("window_looking_ahead\n")
-    #             print("".join(window_looking_ahead))
-    #             print("------------")
-    #             #Testing Logic End
-    #
-    #             # If there is a match in the current window and none in the next wider window looking ahead to the left
-    #             if CharactersDictionary.query.filter_by(
-    #                     characters="".join(current_window)).first() and \
-    #                     CharactersDictionary.query.filter_by(
-    #                         characters="".join(window_looking_ahead)).first() is None:
-    #                 # Append the found match including the dictionary link
-    #                 longest_matches.append("".join(current_window))
-    #
-    #                 # Testing Logic Start
-    #                 print("Returning in first break point")
-    #                 # Testing Logic End
-    #
-    #                 right_most_token = right_most_token - (run + 1)
-    #                 run = run + 1
-    #
-    #             # If the window has reached the left most token and does not find a match
-    #             elif run + 1 == right_most_token and \
-    #                     CharactersDictionary.query.filter_by(
-    #                         characters="".join(current_window)).first() is None:
-    #                 # Append without dictionary link
-    #                 longest_matches.append("".join(current_window))
-    #                 # Testing Logic Start
-    #                 print("Returning in second break point")
-    #                 # Testing Logic End
-    #         return "".join(reversed(longest_matches)).replace("\n", "<br /><br />").strip()
 
     def _persist_article(self, title, url, overall_rating):
         article = Article(title=title, url=url, overall_rating=overall_rating)

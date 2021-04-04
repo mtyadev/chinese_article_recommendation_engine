@@ -8,10 +8,14 @@ from .models import CharactersDictionary, Article, CharactersInArticle, UsersCha
 def index():
     return render_template("index.html", training_articles=training_articles)
 
-@app.route('/article')
+@app.route('/article', methods = ["GET", "POST"])
 def article():
-    # Loading Article
-    article = FocusArticle(request.args.get('article'), request.args.get('website'))
+    if request.method == "POST":
+        # Load a new article
+        article = FocusArticle(request.form.getlist('article')[0], request.form.getlist('website')[0])
+    else:
+        # Loading one of the recommended articles
+        article = FocusArticle(request.args.get('article'), request.args.get('website'))
     return render_template("article.html", article=article.annotated_content, article_id=article.article_id,
                            context_dictionary=article.context_dictionary)
 
