@@ -6,7 +6,27 @@ from .models import CharactersDictionary, Article, CharactersInArticle, UsersCha
 
 @app.route('/')
 def index():
-    return render_template("index.html", training_articles=training_articles)
+    characters_to_be_learned = db.engine.execute("""
+    SELECT
+        uck.characters,
+        cd.pinyin,
+        cd.translation
+        ,count(uck.characters) as times_seen_in_read_articles
+    FROM users_character_knowledge as uck
+    LEFT JOIN characters_in_article as cia
+        ON uck.characters = cia.characters
+    LEFT JOIN characters_dictionary as cd
+        ON cd.characters = uck.characters
+    WHERE characters_known is false
+    GROUP BY uck.characters, cd.pinyin, cd.translation
+    HAVING count(uck.characters) > 2 
+    """)
+    characters_to_be_learned = [row for row in characters_to_be_learned]
+    print("TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEESSSSSSSSSSSSSSSST")
+    print(characters_to_be_learned)
+    print("TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEESSSSSSSSSSSSSSSST")
+    return render_template("index.html", training_articles=training_articles,
+                           characters_to_be_learned=characters_to_be_learned)
 
 @app.route('/article', methods = ["GET", "POST"])
 def article():
