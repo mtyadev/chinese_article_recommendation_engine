@@ -22,9 +22,6 @@ def index():
     HAVING count(uck.characters) > 2 
     """)
     characters_to_be_learned = [row for row in characters_to_be_learned]
-    print("TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEESSSSSSSSSSSSSSSST")
-    print(characters_to_be_learned)
-    print("TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEESSSSSSSSSSSSSSSST")
     return render_template("index.html", training_articles=training_articles,
                            characters_to_be_learned=characters_to_be_learned)
 
