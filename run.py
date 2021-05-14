@@ -5,7 +5,7 @@ from app.models import CharactersDictionary
 if __name__ == "__main__":
     # Initialize Characters Dictionary If Empty
     with app.app_context():
-        initialize_characters_dictionary = False # Make configurable
+        initialize_characters_dictionary = True # Make configurable
         if initialize_characters_dictionary:
             dictionary_entries = []
             for key, value in cleaned_cedict.items():
