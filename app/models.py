@@ -60,7 +60,7 @@ class UsersCharacterKnowledge(db.Model):
     characters_known = db.Column(db.Boolean, nullable=False)
     child = relationship("User")
 
-    def __init__(self,characters, user_id, times_seen, characters_known):
+    def __init__(self, characters, user_id, times_seen, characters_known):
         self.characters = characters
         self.user_id = user_id
         self.times_seen = times_seen
@@ -101,3 +101,18 @@ class CharactersInArticle(db.Model):
     def __repr__(self):
         return '<Characters in Article %r>' % self.characters
 
+class ExampleSentence(db.Model):
+
+    __tablename__ = "example_sentence"
+
+    characters = db.Column(db.String, db.ForeignKey("characters_dictionary.characters"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    sentence = db.Column(db.String, nullable=False)
+
+    def __init__(self, characters, user_id, sentence):
+        self.characters = characters
+        self.user_id = user_id
+        self.sentence = sentence
+
+    def __repr__(self):
+        return '<Example Sentence %r>' % self.sentence
