@@ -51,7 +51,6 @@ def check():
 
 @app.route('/article_assessment', methods = ["GET", "POST"])
 def article_assessment():
-    # Load Raw Article Without Annotations To Identify Sample Sentences for Unknown Articles
     if request.method == "POST":
         article_id = int(request.form.getlist('article_id')[0])
         article = request.form.getlist('focus_article')[0]
