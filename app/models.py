@@ -105,8 +105,9 @@ class ExampleSentence(db.Model):
 
     __tablename__ = "example_sentence"
 
-    characters = db.Column(db.String, db.ForeignKey("characters_dictionary.characters"), primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    characters = db.Column(db.String, db.ForeignKey("characters_dictionary.characters"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     sentence = db.Column(db.String, nullable=False)
 
     def __init__(self, characters, user_id, sentence):
