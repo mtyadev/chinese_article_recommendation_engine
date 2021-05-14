@@ -95,7 +95,6 @@ def article_assessment():
                                                                     dictionary_entry.times_used_in_article
                     existing_users_character_knowledge.characters_known = False
                     # Add sample sentences to database for unknown characters
-
                     for sample_sentence in list(set([sentence.replace("\n", "") for sentence in re.findall(
                             r'[^!?。\.\!\?]+' + dictionary_entry.characters + '+.*?[!?。\.\!\?]+', article)])):
                         example_sentence = ExampleSentence(dictionary_entry.characters, user_id, sample_sentence)
