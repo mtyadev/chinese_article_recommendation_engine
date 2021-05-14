@@ -73,7 +73,8 @@ def article_assessment():
                     users_character_knowledge = UsersCharacterKnowledge(dictionary_entry.characters, user_id,
                                                                     dictionary_entry.times_used_in_article, False)
                     # Add sample sentences to database for unknown characters
-                    for sample_sentence in list(set([sentence.replace("\n", "") for sentence in re.findall(r'[^!?。\.\!\?]+' + dictionary_entry.characters + '+.*[!?。\.\!\?]?', article)])):
+                    for sample_sentence in list(set([sentence.replace("\n", "") for sentence in re.findall(
+                            r'[^!?。\.\!\?]+' + dictionary_entry.characters + '+.*?[!?。\.\!\?]+', article)])):
                         example_sentence = ExampleSentence(dictionary_entry.characters, user_id, sample_sentence)
                         db.session.add(example_sentence)
                 db.session.add(users_character_knowledge)
@@ -95,8 +96,8 @@ def article_assessment():
                     existing_users_character_knowledge.characters_known = False
                     # Add sample sentences to database for unknown characters
 
-                    for sample_sentence in list(set([sentence.replace("\n", "") for sentence in re.findall(r'[^!?。\.\!\?]+' + dictionary_entry.characters + '+.*[!?。\.\!\?]?', article)])):
-                        import pdb; pdb.set_trace()
+                    for sample_sentence in list(set([sentence.replace("\n", "") for sentence in re.findall(
+                            r'[^!?。\.\!\?]+' + dictionary_entry.characters + '+.*?[!?。\.\!\?]+', article)])):
                         example_sentence = ExampleSentence(dictionary_entry.characters, user_id, sample_sentence)
                         db.session.add(example_sentence)
                 db.session.commit()
