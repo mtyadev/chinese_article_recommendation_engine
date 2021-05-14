@@ -21,6 +21,10 @@ class FocusArticle():
         Either loads article from a remote website or a locally pasted article.
         By default load from website.
         """
+        sentences = re.findall(r'[^!?。\.\!\?]+[!?。\.\!\?]?', self.get_article())
+        return sentences
+
+    def get_article(self):
         article = ""
         if self.website != "local":
             res = requests.get(self.article, headers=headers)
@@ -28,8 +32,7 @@ class FocusArticle():
             article = soup.find("div", {websites[self.website][0]: websites[self.website][1]}).getText()
         elif self.website == "local":
             article = self.article
-        sentences = re.findall(r'[^!?。\.\!\?]+[!?。\.\!\?]?', article)
-        return sentences
+        return article
 
     def load_content(self):
         if self.website != "local":

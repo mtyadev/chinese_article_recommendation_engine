@@ -20,8 +20,5 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://{}:{}@{}/{}'.format(databa
 
 db.init_app(app)
 
-
-
-
 from app import views
 

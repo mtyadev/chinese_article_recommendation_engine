@@ -1,8 +1,9 @@
 from app import app, db
+import re
 from flask import render_template, request
 from app.article_searcher import FocusArticle
 from training_articles import training_articles
-from .models import CharactersDictionary, Article, CharactersInArticle, UsersCharacterKnowledge, UsersArticleAssessment
+from .models import CharactersDictionary, Article, ExampleSentence, CharactersInArticle, UsersCharacterKnowledge, UsersArticleAssessment
 
 @app.route('/')
 def index():
@@ -34,28 +35,29 @@ def article():
         # Loading one of the recommended articles
         article = FocusArticle(request.args.get('article'), request.args.get('website'))
     return render_template("article.html", article=article.annotated_content, article_id=article.article_id,
-                           context_dictionary=article.context_dictionary)
+                           context_dictionary=article.context_dictionary, focus_article=article.get_article())
 
 @app.route('/check', methods = ["GET", "POST"])
 def check():
     if request.method == "POST":
         article_id = int(request.form.getlist('article_id')[0])
+        article = request.form.getlist('focus_article')[0]
         unknown_characters_raw = request.form.getlist('unknown')
         unknown_characters = []
         for unknown_character in unknown_characters_raw:
             unknown_characters.append(CharactersDictionary.query.filter_by(characters=unknown_character).first())
 
-    return render_template("check.html", unknown_characters=unknown_characters, article_id=article_id)
+    return render_template("check.html", unknown_characters=unknown_characters, article_id=article_id, focus_article=article)
 
 @app.route('/article_assessment', methods = ["GET", "POST"])
 def article_assessment():
     if request.method == "POST":
         article_id = int(request.form.getlist('article_id')[0])
+        article = request.form.getlist('focus_article')[0]
         unknown_characters = request.form.getlist('unknown')
         # !!!Setting TEST USER ID, Replace by Dynamic User ID Later!!!
         user_id = 2
         # !!!END Setting TEST USER ID!!!
-
         # Get all characters in current article
         characters_in_article = CharactersInArticle.query.filter_by(article_id=article_id).all()
 
@@ -69,6 +71,11 @@ def article_assessment():
                 else:
                     users_character_knowledge = UsersCharacterKnowledge(dictionary_entry.characters, user_id,
                                                                     dictionary_entry.times_used_in_article, False)
+                    # Add sample sentences to database for unknown characters
+                    for sample_sentence in list(set([sentence.replace("\n", "") for sentence in re.findall(
+                            r'[^!?。\.\!\?]+' + dictionary_entry.characters + '+.*?[!?。\.\!\?]+', article)])):
+                        example_sentence = ExampleSentence(dictionary_entry.characters, user_id, sample_sentence)
+                        db.session.add(example_sentence)
                 db.session.add(users_character_knowledge)
                 db.session.commit()
 
@@ -86,10 +93,14 @@ def article_assessment():
                     existing_users_character_knowledge.times_seen = existing_users_character_knowledge.times_seen + \
                                                                     dictionary_entry.times_used_in_article
                     existing_users_character_knowledge.characters_known = False
-
+                    # Add sample sentences to database for unknown characters
+                    for sample_sentence in list(set([sentence.replace("\n", "") for sentence in re.findall(
+                            r'[^!?。\.\!\?]+' + dictionary_entry.characters + '+.*?[!?。\.\!\?]+', article)])):
+                        example_sentence = ExampleSentence(dictionary_entry.characters, user_id, sample_sentence)
+                        db.session.add(example_sentence)
                 db.session.commit()
 
-    return render_template("article_assessment.html", article_id=article_id)
+    return render_template("article_assessment.html", article_id=article_id, focus_article=article)
 
 
 @app.route('/completed', methods = ["GET", "POST"])
