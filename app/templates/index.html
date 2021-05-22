@@ -28,9 +28,9 @@
           <thead class="thead-dark">
             <tr>
               <th scope="col">Characters</th>
-              <th scope="col">Example Sentence</th>
               <th scope="col">Pinyin</th>
               <th scope="col">Translation</th>
+              <th scope="col">Example Sentences</th>
               <th scope="col">Related Articles</th>
             </tr>
           </thead>
@@ -38,6 +38,9 @@
           {% for element in characters_to_be_learned %}
             <tr>
               <td>{{element[0][0]}}</td>
+
+              <td>{{element[0][1]}}</td>
+              <td>{{element[0][2]}}</td>
               <td>
                   {% for sub_element in element[1] %}
                     {% set highlighted_sentence = sub_element.sentence.replace(
@@ -45,8 +48,6 @@
                     {{highlighted_sentence|safe}}<br /><br />
                   {% endfor %}
               </td>
-              <td>{{element[0][1]}}</td>
-              <td>{{element[0][2]}}</td>
               <td>{{element[0][3]}}</td>
             </tr>
           {% endfor %}
