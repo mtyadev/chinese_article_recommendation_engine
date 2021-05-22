@@ -30,16 +30,24 @@
               <th scope="col">Characters</th>
               <th scope="col">Pinyin</th>
               <th scope="col">Translation</th>
+              <th scope="col">Example Sentences</th>
               <th scope="col">Related Articles</th>
             </tr>
           </thead>
           <tbody>
           {% for element in characters_to_be_learned %}
             <tr>
-              <td>{{element[0]}}</td>
-              <td>{{element[1]}}</td>
-              <td>{{element[2]}}</td>
-              <td>{{element[3]}}</td>
+              <td>{{element[0][0]}}</td>
+              <td>{{element[0][1]}}</td>
+              <td>{{element[0][2]}}</td>
+              <td>
+                  {% for sub_element in element[1] %}
+                    {% set highlighted_sentence = sub_element.sentence.replace(
+                element[0][0],'{}{}{}'.format('<span class = "highlighted">',element[0][0],'</span>')) %}
+                    {{highlighted_sentence|safe}}<br /><br />
+                  {% endfor %}
+              </td>
+              <td>{{element[0][3]}}</td>
             </tr>
           {% endfor %}
           </tbody>

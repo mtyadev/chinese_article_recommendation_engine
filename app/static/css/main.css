@@ -46,6 +46,10 @@ a:link{
 	color: #121;
 }
 
+.highlighted{
+	color: #9933ff;
+}
+
 table {
     display: table;
     border-collapse: separate;
