@@ -5,6 +5,13 @@ from app.article_searcher import FocusArticle
 from training_articles import training_articles
 from .models import CharactersDictionary, Article, ExampleSentence, CharactersInArticle, UsersCharacterKnowledge, UsersArticleAssessment
 
+def collect_sample_sentences(characters, user_id, article):
+    # Add sample sentences to database for unknown characters
+    for sample_sentence in list(set([sentence.replace("\n", "") for sentence in re.findall(
+            r'[^!?。\.\!\?]+' + characters + '+.*?[!?。\.\!\?]+', article)])):
+        example_sentence = ExampleSentence(characters, user_id, sample_sentence)
+        db.session.add(example_sentence)
+
 @app.route('/')
 def index():
     characters_to_be_learned = db.engine.execute("""
@@ -71,11 +78,7 @@ def article_assessment():
                 else:
                     users_character_knowledge = UsersCharacterKnowledge(dictionary_entry.characters, user_id,
                                                                     dictionary_entry.times_used_in_article, False)
-                    # Add sample sentences to database for unknown characters
-                    for sample_sentence in list(set([sentence.replace("\n", "") for sentence in re.findall(
-                            r'[^!?。\.\!\?]+' + dictionary_entry.characters + '+.*?[!?。\.\!\?]+', article)])):
-                        example_sentence = ExampleSentence(dictionary_entry.characters, user_id, sample_sentence)
-                        db.session.add(example_sentence)
+                    collect_sample_sentences(dictionary_entry.characters, user_id, article)
                 db.session.add(users_character_knowledge)
                 db.session.commit()
 
@@ -93,13 +96,8 @@ def article_assessment():
                     existing_users_character_knowledge.times_seen = existing_users_character_knowledge.times_seen + \
                                                                     dictionary_entry.times_used_in_article
                     existing_users_character_knowledge.characters_known = False
-                    # Add sample sentences to database for unknown characters
-                    for sample_sentence in list(set([sentence.replace("\n", "") for sentence in re.findall(
-                            r'[^!?。\.\!\?]+' + dictionary_entry.characters + '+.*?[!?。\.\!\?]+', article)])):
-                        example_sentence = ExampleSentence(dictionary_entry.characters, user_id, sample_sentence)
-                        db.session.add(example_sentence)
+                    collect_sample_sentences(dictionary_entry.characters, user_id, article)
                 db.session.commit()
-
     return render_template("article_assessment.html", article_id=article_id, focus_article=article)
 
 
