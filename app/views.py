@@ -29,7 +29,10 @@ def index():
     GROUP BY uck.characters, cd.pinyin, cd.translation
     HAVING count(uck.characters) > 2 
     """)
-    characters_to_be_learned = [row for row in characters_to_be_learned]
+    characters_to_be_learned = [(
+        element,
+        ExampleSentence.query.filter_by(
+            characters=element.characters).limit(3).all()) for element in characters_to_be_learned]
     return render_template("index.html", training_articles=training_articles,
                            characters_to_be_learned=characters_to_be_learned)
 
