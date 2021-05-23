@@ -12,7 +12,7 @@ def collect_sample_sentences(characters, user_id, article):
         example_sentence = ExampleSentence(characters, user_id, sample_sentence)
         db.session.add(example_sentence)
 
-def update_users_character_knowledge(characters_in_article, unknown_characters, user_id):
+def update_users_character_knowledge(article, characters_in_article, unknown_characters, user_id):
     for dictionary_entry in characters_in_article:
         # Add characters to users_character_knowledge collection in case user sees characters for the first time
         if UsersCharacterKnowledge.query.filter_by(
@@ -44,7 +44,7 @@ def update_users_character_knowledge(characters_in_article, unknown_characters, 
             db.session.add(users_character_knowledge)
 
 def update_article_characters_count(article_characters_count, article_id):
-    article = Article.filter_by(id=article_id).first()
+    article = Article.query.filter_by(id=article_id).first()
     article.characters_count = article_characters_count
 
 @app.route('/')
@@ -100,11 +100,20 @@ def article_assessment():
         # !!!Setting TEST USER ID, Replace by Dynamic User ID Later!!!
         user_id = 2
         # !!!END Setting TEST USER ID!!!
-        update_users_character_knowledge(CharactersInArticle.query.filter_by(
+        update_users_character_knowledge(article, CharactersInArticle.query.filter_by(
             article_id=article_id).all(), unknown_characters, user_id)
         update_article_characters_count(
-            CharactersInArticle.query.filter_by(article_id=article_id).all().count(), article_id)
+            CharactersInArticle.query.filter_by(article_id=article_id).count(), article_id)
         db.session.commit()
+
+        --> get_characters_knowledge_count = CharactersInArticle.query.join(UsersCharacterKnowledge,
+                                       CharactersInArticle.characters == UsersCharacterKnowledge.characters).filter(
+            UsersCharacterKnowledge.user_id == user_id).filter(CharactersInArticle.article_id == article_id).filter(
+            UsersCharacterKnowledge.characters_known == True).count()
+
+        update_charactes
+
+        import pdb; pdb.set_trace()
 
     return render_template("article_assessment.html", article_id=article_id, focus_article=article)
 

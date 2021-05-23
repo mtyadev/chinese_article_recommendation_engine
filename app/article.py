@@ -18,7 +18,7 @@ class FocusArticle():
         return sentences
 
     def _annotate_content(self):
-        article_id = self._persist_article()
+        article_id = self._persist_article(self.url)
         annotated_sentences = []
         for sentence in self.sentences:
             annotated_sentences.append("<br /><br />")

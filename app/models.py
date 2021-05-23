@@ -46,11 +46,8 @@ class Article(db.Model):
     characters_count = db.Column(db.Integer)
     overall_rating = db.Column(db.Float)
 
-    def __init__(self, url, created_date, characters_count, overall_rating):
+    def __init__(self, url):
         self.url = url
-        self.created_date = created_date
-        self.characters_count = characters_count
-        self.overall_rating = overall_rating
 
     def __repr__(self):
         return '<Article %r>' % self.url
