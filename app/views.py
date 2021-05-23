@@ -41,11 +41,18 @@ def update_users_character_knowledge(article, characters_in_article, unknown_cha
                                                                 dictionary_entry.times_used_in_article
                 existing_users_character_knowledge.characters_known = False
                 collect_sample_sentences(dictionary_entry.characters, user_id, article)
-            db.session.add(users_character_knowledge)
 
 def update_article_characters_count(article_characters_count, article_id):
     article = Article.query.filter_by(id=article_id).first()
     article.characters_count = article_characters_count
+
+def get_characters_knowledge_count(characters_known, article_id, user_id):
+    characters_knowledge_count = CharactersInArticle.query.join(
+        UsersCharacterKnowledge, CharactersInArticle.characters == UsersCharacterKnowledge.characters).filter(
+        UsersCharacterKnowledge.user_id == user_id).filter(CharactersInArticle.article_id == article_id).filter(
+        UsersCharacterKnowledge.characters_known == characters_known).count()
+    return characters_knowledge_count
+
 
 @app.route('/')
 def index():
@@ -100,21 +107,19 @@ def article_assessment():
         # !!!Setting TEST USER ID, Replace by Dynamic User ID Later!!!
         user_id = 2
         # !!!END Setting TEST USER ID!!!
+
+        # Persist users_character_knowledge and article_characters_count
         update_users_character_knowledge(article, CharactersInArticle.query.filter_by(
             article_id=article_id).all(), unknown_characters, user_id)
         update_article_characters_count(
             CharactersInArticle.query.filter_by(article_id=article_id).count(), article_id)
         db.session.commit()
 
-        --> get_characters_knowledge_count = CharactersInArticle.query.join(UsersCharacterKnowledge,
-                                       CharactersInArticle.characters == UsersCharacterKnowledge.characters).filter(
-            UsersCharacterKnowledge.user_id == user_id).filter(CharactersInArticle.article_id == article_id).filter(
-            UsersCharacterKnowledge.characters_known == True).count()
-
-        update_charactes
-
-        import pdb; pdb.set_trace()
-
+        # Persist initial characters known and unknown counts. Run after commit because already requires persisted info.
+        users_article_assessment = UsersArticleAssessment.query.filter_by(article_id=article_id, user_id=user_id)
+        users_article_assessment.characters_known_initial_read = get_characters_knowledge_count(True, article_id, user_id)
+        users_article_assessment.characters_unknown_initial_read = get_characters_knowledge_count(False, article_id, user_id)
+        db.session.commit()
     return render_template("article_assessment.html", article_id=article_id, focus_article=article)
 
 @app.route('/completed', methods = ["GET", "POST"])

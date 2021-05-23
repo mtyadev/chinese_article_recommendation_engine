@@ -78,9 +78,9 @@ class UsersArticleAssessment(db.Model):
     article_id = db.Column(db.Integer, db.ForeignKey("article.id"), primary_key=True)
     rating = db.Column(db.Integer, nullable=False)
     difficulty = db.Column(db.Integer, nullable=False)
-    tags = db.Column(db.String, nullable=False)
-    characters_known_initial_read = db.Column(db.Integer, nullable=False)
-    characters_unknown_initial_read = db.Column(db.Integer, nullable=False)
+    tags = db.Column(db.String)
+    characters_known_initial_read = db.Column(db.Integer)
+    characters_unknown_initial_read = db.Column(db.Integer)
     article = relationship("Article")
 
     def __init__(self, user_id, article_id, rating, difficulty, tags):
