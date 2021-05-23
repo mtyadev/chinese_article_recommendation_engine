@@ -115,11 +115,6 @@ def article_assessment():
             CharactersInArticle.query.filter_by(article_id=article_id).count(), article_id)
         db.session.commit()
 
-        # Persist initial characters known and unknown counts. Run after commit because already requires persisted info.
-        users_article_assessment = UsersArticleAssessment.query.filter_by(article_id=article_id, user_id=user_id)
-        users_article_assessment.characters_known_initial_read = get_characters_knowledge_count(True, article_id, user_id)
-        users_article_assessment.characters_unknown_initial_read = get_characters_knowledge_count(False, article_id, user_id)
-        db.session.commit()
     return render_template("article_assessment.html", article_id=article_id, focus_article=article)
 
 @app.route('/completed', methods = ["GET", "POST"])
@@ -129,8 +124,12 @@ def completed():
         # !!!Setting TEST USER ID, Replace by Dynamic User ID Later!!!
         user_id = 2
         # !!!END Setting TEST USER ID!!!
-        users_article_assessment = UsersArticleAssessment(user_id, article_id, int(request.form.getlist('article_rating')[0]),
-                                   int(request.form.getlist('article_difficulty')[0]), request.form.getlist('article_tags')[0])
+        users_article_assessment = UsersArticleAssessment(
+            user_id, article_id, int(request.form.getlist('article_rating')[0]),
+            int(request.form.getlist('article_difficulty')[0]),
+            request.form.getlist('article_tags')[0],
+            get_characters_knowledge_count(True, article_id, user_id),
+            get_characters_knowledge_count(False, article_id, user_id))
         db.session.add(users_article_assessment)
         db.session.commit()
 

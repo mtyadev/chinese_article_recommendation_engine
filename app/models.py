@@ -83,12 +83,15 @@ class UsersArticleAssessment(db.Model):
     characters_unknown_initial_read = db.Column(db.Integer)
     article = relationship("Article")
 
-    def __init__(self, user_id, article_id, rating, difficulty, tags):
+    def __init__(self, user_id, article_id, rating, difficulty, tags, characters_known_initial_read,
+                 characters_unknown_initial_read):
         self.user_id = user_id
         self.article_id = article_id
         self.rating = rating
         self.difficulty = difficulty
         self.tags = tags
+        self.characters_known_initial_read = characters_known_initial_read
+        self.characters_unknown_initial_read = characters_unknown_initial_read
 
 class CharactersInArticle(db.Model):
 
