@@ -41,12 +41,19 @@ class Article(db.Model):
     __tablename__ = "article"
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
     url = db.Column(db.String, nullable=False)
-    overall_rating = db.Column(db.Float, nullable=False)
+    created_date = db.Column(db.DateTime, server_default=db.func.now())
+    characters_count = db.Column(db.Integer)
+    overall_rating = db.Column(db.Float)
+
+    def __init__(self, url, created_date, characters_count, overall_rating):
+        self.url = url
+        self.created_date = created_date
+        self.characters_count = characters_count
+        self.overall_rating = overall_rating
 
     def __repr__(self):
-        return '<Article %r>' % self.title
+        return '<Article %r>' % self.url
 
 # Below tables are bridge tables between main entities above
 
@@ -75,6 +82,8 @@ class UsersArticleAssessment(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     difficulty = db.Column(db.Integer, nullable=False)
     tags = db.Column(db.String, nullable=False)
+    characters_known_initial_read = db.Column(db.Integer, nullable=False)
+    characters_unknown_initial_read = db.Column(db.Integer, nullable=False)
     article = relationship("Article")
 
     def __init__(self, user_id, article_id, rating, difficulty, tags):

@@ -1,46 +1,26 @@
 # -*- coding:utf-8 -*-
 from app import db
 from .models import CharactersDictionary, Article, CharactersInArticle, UsersCharacterKnowledge
-import requests
-from bs4 import BeautifulSoup
-from websites import websites, headers
 import jieba
 import re
 
-
 class FocusArticle():
-    def __init__(self, article, website):
-        self.article = article
-        self.website = website
-        self.annotated_content, self.article_id = self.load_content()
+    def __init__(self, unprocessed_content, url):
+        self.unprocessed_content = unprocessed_content
+        self.url = url
+        self.annotated_content, self.article_id = self._annotate_content()
         self.context_dictionary = self.create_context_dictionary(self.article_id)
 
     @property
-    def content(self):
-        """
-        Either loads article from a remote website or a locally pasted article.
-        By default load from website.
-        """
-        sentences = re.findall(r'[^!?。\.\!\?]+[!?。\.\!\?]?', self.get_article())
+    def sentences(self):
+        """Split article content into single sentences"""
+        sentences = re.findall(r'[^!?。\.\!\?]+[!?。\.\!\?]?', self.unprocessed_content)
         return sentences
 
-    def get_article(self):
-        article = ""
-        if self.website != "local":
-            res = requests.get(self.article, headers=headers)
-            soup = BeautifulSoup(res.content, features="html.parser")
-            article = soup.find("div", {websites[self.website][0]: websites[self.website][1]}).getText()
-        elif self.website == "local":
-            article = self.article
-        return article
-
-    def load_content(self):
-        if self.website != "local":
-            article_id = self._persist_article("test_title", self.article, 0)
-        elif self.website == "local":
-            article_id = self._persist_article("test_title", "Local", 0)
+    def _annotate_content(self):
+        article_id = self._persist_article()
         annotated_sentences = []
-        for sentence in self.content:
+        for sentence in self.sentences:
             annotated_sentences.append("<br /><br />")
             for token in jieba.cut(sentence):
                 best_dict_matches = self._find_longest_matches(token, [])
@@ -61,7 +41,6 @@ class FocusArticle():
                         self._persist_characters_in_article(cleaned_dict_match, article_id)
                     else:
                         annotated_sentences.append(cleaned_dict_match)
-
         return "".join(annotated_sentences).encode().decode("utf-8"), article_id
 
     def create_context_dictionary(self, article_id):
@@ -116,8 +95,8 @@ class FocusArticle():
                     searched_in_dictionary.append((tokens[right_window_edge-1:], "not_available_in_dictionary"))
                     return self._find_longest_matches(tokens[:-1], searched_in_dictionary)
 
-    def _persist_article(self, title, url, overall_rating):
-        article = Article(title=title, url=url, overall_rating=overall_rating)
+    def _persist_article(self, url):
+        article = Article(url=url)
         db.session.add(article)
         db.session.commit()
         return article.id
