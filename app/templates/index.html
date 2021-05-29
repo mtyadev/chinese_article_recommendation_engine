@@ -54,19 +54,26 @@
         <table class="table">
           <thead class="thead-dark">
             <tr>
-              <th scope="col">Article</th>
+              <th scope="col">Article Tags</th>
+              <th scope="col">Characters Known</th>
               <th scope="col">Length</th>
               <th scope="col">Difficulty</th>
               <th scope="col">Rating</th>
+              <th scope="col">Time Read</th>
+              <th scope="col">Go To Article</th>
             </tr>
           </thead>
           <tbody>
-          {% for article in training_articles %}
+          {% for element in article_history %}
+            {{element.__dict__}}
             <tr>
-              <td><a href="{{ url_for('article', article=article[0], website=article[1]) }}">{{article[0]}}</a></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>{{element[1].tags}}</td>
+              <td>{{((element[1].characters_known_initial_read/element[0].characters_count) * 100) | round(2)}}%</td>
+              <td>{{element[0].characters_count}}</td>
+              <td>{{element[1].difficulty}}</td>
+              <td>{{element[1].rating}}</td>
+              <td>{{element[0].created_date.strftime("%Y-%m-%d, %H:%M:%S")}}</td>
+              <td><a href="{{element[0].url}}">view article</a></td>
             </tr>
           {% endfor %}
           </tbody>
