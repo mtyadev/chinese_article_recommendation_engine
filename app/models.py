@@ -41,12 +41,16 @@ class Article(db.Model):
     __tablename__ = "article"
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
     url = db.Column(db.String, nullable=False)
-    overall_rating = db.Column(db.Float, nullable=False)
+    created_date = db.Column(db.DateTime, server_default=db.func.now())
+    characters_count = db.Column(db.Integer)
+    overall_rating = db.Column(db.Float)
+
+    def __init__(self, url):
+        self.url = url
 
     def __repr__(self):
-        return '<Article %r>' % self.title
+        return '<Article %r>' % self.url
 
 # Below tables are bridge tables between main entities above
 
@@ -74,15 +78,20 @@ class UsersArticleAssessment(db.Model):
     article_id = db.Column(db.Integer, db.ForeignKey("article.id"), primary_key=True)
     rating = db.Column(db.Integer, nullable=False)
     difficulty = db.Column(db.Integer, nullable=False)
-    tags = db.Column(db.String, nullable=False)
+    tags = db.Column(db.String)
+    characters_known_initial_read = db.Column(db.Integer)
+    characters_unknown_initial_read = db.Column(db.Integer)
     article = relationship("Article")
 
-    def __init__(self, user_id, article_id, rating, difficulty, tags):
+    def __init__(self, user_id, article_id, rating, difficulty, tags, characters_known_initial_read,
+                 characters_unknown_initial_read):
         self.user_id = user_id
         self.article_id = article_id
         self.rating = rating
         self.difficulty = difficulty
         self.tags = tags
+        self.characters_known_initial_read = characters_known_initial_read
+        self.characters_unknown_initial_read = characters_unknown_initial_read
 
 class CharactersInArticle(db.Model):
 
