@@ -2,8 +2,9 @@ from app import app, db
 import re
 from flask import render_template, request
 from app.article import FocusArticle
-from training_articles import training_articles
-from .models import Article, CharactersDictionary, ExampleSentence, CharactersInArticle, UsersCharacterKnowledge, UsersArticleAssessment
+from .models import Article, CharactersDictionary, ExampleSentence, CharactersInArticle, UsersCharacterKnowledge, \
+    UsersArticleAssessment
+from sqlalchemy import desc
 
 def collect_sample_sentences(characters, user_id, article):
     # Add sample sentences to database for unknown characters
@@ -75,7 +76,9 @@ def index():
         element,
         ExampleSentence.query.filter_by(
             characters=element.characters).limit(3).all()) for element in characters_to_be_learned]
-    return render_template("index.html", training_articles=training_articles,
+    article_history = db.session.query(Article, UsersArticleAssessment).join(UsersArticleAssessment).\
+        order_by(desc(Article.created_date)).all()
+    return render_template("index.html", article_history=article_history,
                            characters_to_be_learned=characters_to_be_learned)
 
 @app.route('/article', methods = ["GET", "POST"])
